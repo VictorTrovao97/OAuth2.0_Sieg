@@ -1,4 +1,4 @@
-'<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,12 +8,13 @@
     <!-- Metadados de pacote NuGet -->
     <PackageId>Sieg.Auth</PackageId>
     <Version>1.0.0</Version>
-    <Authors>SeuNomeOuEmpresa</Authors>
-    <Company>SeuNomeOuEmpresa</Company>
-    <Description>SDK de autenticação OAuth 2.0 com a SIEG para sistemas emissores.</Description>
-    <PackageTags>SIEG;OAuth2;Fiscal;SDK</PackageTags>
-    <RepositoryUrl>https://github.com/seu-usuario/sieg-auth</RepositoryUrl>
+    <Authors>VictorTrovao</Authors>
+    <Company>VictorTrovao</Company>
+    <Description>SDK de autenticação OAuth 2.0 da SIEG para sistemas emissores de nota fiscal.</Description>
+    <PackageTags>SIEG;OAuth2;Fiscal;SDK;NotasFiscais</PackageTags>
+    <RepositoryUrl>https://github.com/VictorTrovao97/OAuth2.0_Sieg</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/VictorTrovao97/OAuth2.0_Sieg</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

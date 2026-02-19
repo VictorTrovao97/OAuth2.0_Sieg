@@ -233,7 +233,7 @@ public sealed class SiegAuthClient : ISiegAuthClient
                 $"Chamada HTTP para '{uri}' retornou código {(int)response.StatusCode} ({response.StatusCode}).");
         }
 
-        if (typeof(TResponse) == typeof(object) || typeof(TResponse) == typeof(object?))
+        if (typeof(TResponse) == typeof(object))
         {
             // Chamadas que não exigem corpo de resposta.
             return default!;
