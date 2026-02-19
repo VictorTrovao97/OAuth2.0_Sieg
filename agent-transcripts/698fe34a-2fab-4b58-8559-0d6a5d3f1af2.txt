@@ -1,0 +1,3999 @@
+user:
+<external_links>
+### Potentially Relevant Websearch Results
+
+You should respond as if these information are known to you. Refrain from saying "I am unable to browse the internet" or "I don't have access to the internet" or "I'm unable to provide real-time news updates". This is your internet search results. Please always cite any links you referenced from the above search results in your response in markdown format.
+
+-------
+Website URL: https://integracoes.sieg.com/sistema-externo/docs/api-key-2
+Website Title: Guia de uso | API SIEG | sieg
+Website Content:
+logo
+
+API SIEG
+
+Mode
+
+Log in
+
+Primeiros Passos
+
+Autenticação
+
+Visão geral
+
+ JSON Web Token (JWT)
+
+OAuth 2.0
+
+Guia de uso
+
+Demonstração
+
+Api Key
+
+Api Gestão da Conta Sieg
+
+Api Gestão de Pendências
+
+Api Gestão Fiscal
+
+Api Trabalhista
+
+# Guia de uso
+
+---
+
+## 
+
+Autenticação com OAuth 2.0
+
+### 
+
+Endpoint para geração de token temporário
+
+**Base URL:**  
+<https://app.sieg.com/AuthorizeAccess.aspx>
+
+## 
+
+Visão Geral
+
+Este método de autenticação utiliza o padrão **OAuth 2.0** e realiza a validação do acesso por meio de **login e senha da plataforma**, considerando as **permissões de acesso configuradas para a conta SIEG**.
+
+Durante o processo de autenticação, o usuário concede permissão ao sistema externo de acordo com o **nível de acesso solicitado**.  
+Após a autenticação bem-sucedida, o sistema redireciona para uma **URL de callback** previamente configurada, retornando um **token temporário**.
+
+O **token temporário possui validade de 10 minutos** e permite o consumo dos seguintes endpoints OAuth 2.0:
+
+* `**generate-token**` — geração do token definitivo
+
+Com o token temporário, o sistema externo pode utilizar o endpoint `**generate-token**` para gerar um **token definitivo**, que deverá ser utilizado nas requisições à API.
+
+O **token definitivo possui validade de 30 dias** e deverá ser **renovado**  por meio do endpoint `**refresh**`.
+
+## 
+
+Quando utilizar
+
+Este método de autenticação é recomendado para:
+
+* Integrações simples que requerem apenas uma credencial
+* Aplicações, serviços ou scripts que necessitam acessar a API de forma programática
+* Cenários em que o controle de permissões por nível de acesso é necessário
+
+## 
+
+Exemplo de URL de Autenticação
+
+<https://app.sieg.com/AuthorizeAccess.aspx?clientId=clientId&state=ex123&accessLevel=read>
+
+## 
+
+Descrição dos parâmetros da URL
+
+### 
+
+`clientId`
+
+Credencial utilizada para autenticação e identificação do sistema externo.
+
+### 
+
+`state`
+
+Identificador interno definido pelo sistema externo, utilizado para:
+
+* correlacionar a requisição de autenticação
+* identificar o retorno recebido na URL de callback
+* realizar rastreamento do processo de autenticação
+
+### 
+
+`accessLevel`
+
+Nível de acesso solicitado para consumo da API, que deverá ser autorizado pelo administrador da conta SIEG:
+
+* `read` — acesso somente para leitura
+* `write` — acesso para envio e escrita de dados
+* `fullAccess` — acesso total à API
+
+## 
+
+Fluxo resumido de autenticação
+
+1. O sistema externo redireciona o usuário para a URL de autenticação OAuth 2.0
+2. O usuário realiza login com suas credenciais da plataforma SIEG
+3. As permissões de acesso solicitadas são validadas conforme o `accessLevel`
+4. O sistema retorna um **token temporário** para a URL de callback
+5. O sistema externo utiliza o token temporário para consumir o endpoint `**generate-token**`
+6. O **token definitivo** gerado passa a ser utilizado nas chamadas à API
+7. Antes do vencimento de 30 dias, o token definitivo deve ser:  
+   * **renovado via** `**refresh**`  
+   * **revogado via** `**revoke**`, quando necessário
+
+## On this page
+
+1. ### Autenticação com OAuth 2.0  
+   1. Endpoint para geração de token temporário
+2. ### Visão Geral
+3. ### Quando utilizar
+4. ### Exemplo de URL de Autenticação
+5. ### Descrição dos parâmetros da URL  
+   1. clientId  
+   2. state  
+   3. accessLevel
+6. ### Fluxo resumido de autenticação
+____
+
+</external_links>
+<user_query>
+https://integracoes.sieg.com/sistema-externo/docs/api-key-2 
+Consegue ve a documentação desse link?
+</user_query>
+
+assistant:
+[Thinking] 
+Sim, consigo ver a documentação desse link (`https://integracoes.sieg.com/sistema-externo/docs/api-key-2`).
+
+De forma bem resumida, a página explica:
+
+- **Autenticação com OAuth 2.0 (SIEG)**:
+  - Você redireciona o usuário para `https://app.sieg.com/AuthorizeAccess.aspx` com `clientId`, `state` e `accessLevel` (`read`, `write` ou `fullAccess`).  
+  - Após o login na SIEG, ela redireciona para a **URL de callback** com um **token temporário** (válido por 10 minutos).
+  - Com esse token temporário você chama o endpoint `generate-token` para obter o **token definitivo** (válido por 30 dias).
+  - Antes de vencer, você renova com `refresh` ou revoga com `revoke`.  
+  - Esse token definitivo é o que você usa nas chamadas da API.
+
+Quer que eu te ajude a **implementar esse fluxo** (por exemplo em Node, .NET, Python, etc.) ou prefere que eu detalhe melhor algum trecho específico da documentação?
+
+user:
+<user_query>
+A minha ideia é um criar SDK com toda logica de autenticação para um sistema se integrar com a SIEG , antes de criar codigos , vamos deixar todo o projeto alinhado pode ser ?
+</user_query>
+
+assistant:
+[Thinking] **Planning SDK for OAuth 2.0**
+
+The user, who speaks Portuguese, wants to create an SDK that encapsulates OAuth 2.0 auth logic to SIEG. They prefer to start with planning before writing any code, which makes sense to get structured ideas in place first. I should gather key requirements, like the programming language. Since the project involves planning, using the planning mode seems fitting. I’ll also use the SwitchMode tool to facilitate this process.
+[Tool call] SwitchMode
+  target_mode_id: plan
+  explanation: Você quer alinhar a arquitetura e o escopo do SDK antes de escrever código, o que é ideal para um modo de planejamento mais detalhado e colaborativo.
+
+[Tool result] SwitchMode
+
+assistant:
+[Thinking] **Evaluating SDK integration**
+
+I'm considering the primary language and runtime for the SDK, along with the integration style, whether it's server-side backend, desktop, or multi-tenant SaaS. I also need to figure out if this is purely an authentication SDK or if it wraps business APIs as well. That might come later, so I'll start with the core aspects first. I think I’ll use the AskQuestion tool for clarity.
+[Tool call] AskQuestion
+  title: Definição inicial do SDK SIEG
+  questions: [{"id":"lang","prompt":"Em qual linguagem/plataforma você quer que o SDK principal seja criado primeiro?","options":[{"id":".net","label":".NET (C#)"},{"id":"node","label":"Node.js (TypeScript/JavaScript)"},{"id":"python","label":"Python"},{"id":"java","label":"Java"},{"id":"other","label":"Outra (vou explicar em texto depois)"}]},{"id":"context","prompt":"Qual é o principal cenário de uso desse SDK?","options":[{"id":"single_system","label":"Um único sistema interno vai usar o SDK para acessar a SIEG (single-tenant)."},{"id":"saas_multi","label":"Meu sistema é SaaS e vários clientes (várias contas SIEG) vão se conectar via esse SDK (multi-tenant)."},{"id":"desktop","label":"Aplicação desktop/cliente local que precisa falar com a SIEG."},{"id":"unsure","label":"Ainda não tenho certeza, quero uma arquitetura mais genérica."}]}]
+
+[Tool result] AskQuestion
+
+user:
+<user_query>
+E
+</user_query>
+
+assistant:
+[Thinking] 
+[Tool call] AskQuestion
+  title: Definir base do SDK SIEG
+  questions: [{"id":"lang2","prompt":"Em qual linguagem você quer que eu desenhe o SDK primeiro? (a que você realmente pretende usar agora)","options":[{"id":".net","label":".NET (C#)"},{"id":"node","label":"Node.js (TypeScript/JavaScript)"},{"id":"python","label":"Python"},{"id":"java","label":"Java"},{"id":"other","label":"Outra (eu explico em texto)"}]},{"id":"context2","prompt":"Como esse SDK será usado na prática?","options":[{"id":"single","label":"Um único sistema interno consumindo SIEG (uma conta só)."},{"id":"multi","label":"Sistema SaaS com várias contas SIEG (multi-tenant)."},{"id":"local","label":"Aplicação desktop/cliente local."},{"id":"generic","label":"Quero algo mais genérico, sem amarrar muito ao cenário."}]}]
+
+[Tool result] AskQuestion
+
+assistant:
+[Thinking] **Planning SDK Development**
+
+I'm thinking about the "sistemas emissores de nota fiscal" and considering that they could be desktop or web. I want to propose a UI-agnostic design since the SDK doesn’t own the browser; it just generates URLs and processes callback data. I have enough to suggest a default approach, targeting a .NET 8 class library. The SDK needs to be UI/framework-agnostic to serve both desktop and web consumers. I’ll outline a plan covering requirements, public surface, and key OAuth methods.
+**Developing Token Models Plan**
+
+I'm focused on creating token models like `SiegToken`, with considerations for expiration and refresh tokens. I need the exact JSON from SIEG endpoints, but for now, placeholders will do until I check the docs. The plan includes HTTP abstraction using `IHttpClientFactory` or injecting `HttpClient`, along with custom exceptions for error handling. For multi-tenant systems, I'll establish a token repository with `ISiegTokenStore`. Also, I plan to extend with API modules later. Lastly, I must format my plan according to markdown_spec while balancing user preferences.
+**Clarifying Plan Structure**
+
+I'm thinking about the priorities between system instructions and developer preferences. For the CreatePlan, the first line must be H1, even if the user won’t see the internal plan file. So, I’ll start with "# ..." in the plan string, which feels contradictory but is necessary. I need to ensure the content is concise and clear. I’ll include a mermaid sequence for the authentication flow and a list of todos like "design-public-api," "define-auth-flow," and "error-handling-logging." Then, I'll call the CreatePlan tool.
+[Tool call] CreatePlan
+  name: sdk-sieg-auth-dotnet
+  overview: Definir a arquitetura de um SDK .NET para abstrair toda a autenticação OAuth 2.0 (e futuros modos) com a SIEG, focado em sistemas emissores de nota fiscal.
+  plan: # Plano do SDK SIEG Auth (.NET)
+
+## 1. Objetivo e escopo inicial
+- **Objetivo principal**: Criar um SDK em .NET que encapsule todo o fluxo de autenticação com a SIEG (OAuth 2.0 descrito em `https://integracoes.sieg.com/sistema-externo/docs/api-key-2`), para ser usado por sistemas emissores de nota fiscal.
+- **Escopo desta primeira versão**:
+  - Construção de URL de autenticação (AuthorizeAccess).
+  - Tratamento do retorno na URL de callback (token temporário).
+  - Chamada do endpoint `generate-token` para obter o token definitivo.
+  - Renovação com `refresh` e revogação com `revoke`.
+  - Modelos de dados de token e abstração de armazenamento.
+  - Não incluir ainda os endpoints fiscais em si (NFe etc.), apenas deixar o SDK pronto para anexar módulos de API depois.
+
+## 2. Requisitos e premissas
+- **Plataforma**: .NET (sugerido .NET 8, mas mantendo compatibilidade possível com .NET 6+).
+- **Uso previsto**:
+  - Sistemas emissores de nota (desktop, web ou serviços) usam o SDK para integrar com a SIEG.
+  - O SDK não assume tipo de interface (UI-agnostic): ele apenas fornece URLs, modelos e chamadas HTTP.
+- **Multi-conta**:
+  - Deve permitir que o integrador gerencie **várias contas SIEG** se quiser (multi-tenant), sem engessar como single-tenant.
+  - A distinção de contas será responsabilidade do integrador via uma chave (por exemplo `tenantId` ou `empresaId`) usada no armazenamento de tokens.
+
+## 3. Estrutura de projeto sugerida
+- **Projeto principal**: `[src/Sieg.Auth/Sieg.Auth.csproj](src/Sieg.Auth/Sieg.Auth.csproj)`
+  - Biblioteca de classes com:
+    - Interfaces públicas (contratos do SDK).
+    - Implementações padrão de autenticação.
+    - Modelos de configuração e modelos de token.
+- **Projeto de exemplos** (futuro): `[samples/Sieg.Auth.Samples.Console](samples/Sieg.Auth.Samples.Console)`
+  - Exemplo simples de fluxo completo: gerar URL, receber token temporário, trocar por definitivo, salvar token.
+- **Projeto de testes** (futuro): `[tests/Sieg.Auth.Tests](tests/Sieg.Auth.Tests)`
+  - Testes unitários para fluxo de autenticação e parse de respostas.
+
+## 4. Design da API pública de autenticação
+
+### 4.1. Modelos de configuração
+- **`SiegOAuthOptions`**
+  - **Propriedades principais**:
+    - `ClientId` (obrigatório).
+    - `RedirectUri` (callback configurada na SIEG).
+    - `BaseAuthorizeUrl` (default: `"https://app.sieg.com/AuthorizeAccess.aspx"`).
+    - `BaseApiUrl` para endpoints `generate-token`, `refresh`, `revoke` (configurável para ambientes de teste/homologação, se houver).
+    - `DefaultAccessLevel` (`read`, `write`, `fullAccess`), opcional.
+  - Objetivo: concentrar toda a configuração de acesso à SIEG em um único objeto.
+
+### 4.2. Modelos de domínio (tokens)
+- **`SiegToken`** (resultado de `generate-token`):
+  - `AccessToken` (token definitivo usado nas requisições).
+  - `ExpiresAt` ou `ExpiresIn`.
+  - `RefreshToken` (se a SIEG expuser).
+  - Campos adicionais conforme o JSON real da SIEG.
+- **`SiegTemporaryToken`**:
+  - Representa o token temporário recebido na URL de callback (geralmente string simples + metadados).
+
+### 4.3. Interfaces principais
+- **`ISiegAuthClient`** (principal ponto de entrada):
+  - `string BuildAuthorizationUrl(string state, string? accessLevel = null)`
+    - Monta a URL conforme a documentação (`clientId`, `state`, `accessLevel`).
+  - `Task<SiegToken> ExchangeTemporaryTokenAsync(string temporaryToken, CancellationToken ct = default)`
+    - Usa o token temporário para chamar `generate-token`.
+  - `Task<SiegToken> RefreshTokenAsync(string refreshToken, CancellationToken ct = default)`
+    - Chama endpoint `refresh` para renovar o token definitivo.
+  - `Task RevokeTokenAsync(string accessTokenOrRefreshToken, CancellationToken ct = default)`
+    - Chama endpoint `revoke`.
+
+- **`ISiegTokenStore`** (abstração de armazenamento de tokens):
+  - `Task<SiegToken?> GetTokenAsync(string accountKey, CancellationToken ct = default)`
+  - `Task SaveTokenAsync(string accountKey, SiegToken token, CancellationToken ct = default)`
+  - `Task DeleteTokenAsync(string accountKey, CancellationToken ct = default)`
+  - `accountKey` é definido pelo integrador (por exemplo CNPJ, ID da empresa, ou ID interno).
+
+### 4.4. Implementação padrão
+- **`SiegAuthClient`**
+  - Implementa `ISiegAuthClient`.
+  - Recebe em construtor:
+    - `SiegOAuthOptions`.
+    - `HttpClient` ou `IHttpClientFactory`.
+    - `ISiegTokenStore` (opcional; pode ter implementação em memória por padrão).
+  - Responsabilidades:
+    - Montar query string da URL de autenticação.
+    - Serializar/deserializar JSON dos endpoints OAuth 2.0 da SIEG.
+    - Mapear erros HTTP em exceções específicas do SDK.
+
+- **Implementações de `ISiegTokenStore` incluídas**:
+  - `InMemorySiegTokenStore` (para cenários simples, testes, ou apps de linha de comando).
+  - Extensões futuras para `IDistributedCache` / banco de dados podem ser fornecidas depois.
+
+## 5. Fluxo de autenticação suportado pelo SDK
+
+### 5.1. Visão de alto nível (mermaid)
+
+```mermaid
+sequenceDiagram
+  participant App as EmissorNFe
+  participant Browser as Browser
+  participant Sieg as SiegOAuth
+  participant SDK as SiegAuthClient
+
+  App->>SDK: BuildAuthorizationUrl(state, accessLevel)
+  SDK-->>App: urlAutorizacao
+  App->>Browser: Redireciona para urlAutorizacao
+  Browser->>Sieg: GET AuthorizeAccess.aspx
+  Sieg-->>Browser: Tela de login e permissão
+  Browser-->>App: Redirect para RedirectUri?tempToken=...
+  App->>SDK: ExchangeTemporaryTokenAsync(tempToken)
+  SDK->>Sieg: POST generate-token
+  Sieg-->>SDK: tokenDefinitivo (30 dias)
+  SDK-->>App: SiegToken
+  App->>SDK: (opcional) SaveTokenAsync(accountKey, token)
+```
+
+### 5.2. Interação com a aplicação emissora
+- O SDK **não abre navegador** diretamente (para ser genérico):
+  - Ele fornece a URL; o sistema emissor decide como abrir (redirecionar HTTP, abrir WebView, abrir navegador padrão etc.).
+- A aplicação emissora é responsável por:
+  - Expor uma rota/callback que receba o token temporário.
+  - Passar o token temporário para o `ISiegAuthClient`.
+  - Definir qual será o `accountKey` (ex.: CNPJ da empresa).
+
+## 6. Erros, logging e extensibilidade
+
+### 6.1. Tratamento de erros
+- Criar exceções específicas, por exemplo:
+  - `SiegAuthException` (base).
+  - `SiegHttpException` (para erros HTTP não esperados).
+  - `SiegTokenExpiredException` (se detectarmos expiração localmente).
+- Incluir mensagens de erro amigáveis e detalhes técnicos para debug.
+
+### 6.2. Logging
+- Não depender de uma lib específica de logging.
+- Usar `ILogger<ISiegAuthClient>` via DI quando disponível (ASP.NET Core) ou uma interface interna opcional de logger.
+
+### 6.3. Extensibilidade
+- Mantê-lo **orientado a interfaces** (`ISiegAuthClient`, `ISiegTokenStore`).
+- Permitir herança ou composição para cenários customizados (por exemplo, integrador que quer adicionar telemetria própria).
+
+## 7. Futuras extensões (fora do escopo imediato)
+- **Módulos de API**:
+  - `SiegFiscalClient` para endpoints fiscais (NFe, NFSe, etc.), reutilizando o token definitivo.
+- **Suporte a API Key e JWT**:
+  - Expor um namespace separado `Sieg.ApiKey` caso a SIEG ofereça outro modo de autenticação além do OAuth 2.0.
+- **Helpers por tipo de aplicação**:
+  - Extensões para ASP.NET Core (middlewares, handlers de callback, filtros).
+  - Helpers específicos para WPF/WinForms se necessário.
+
+## 8. Documentação e exemplos
+- **README principal** explicando:
+  - Como configurar `SiegOAuthOptions`.
+  - Como montar a URL de autorização.
+  - Como lidar com o callback.
+  - Como armazenar tokens por empresa/cliente.
+- **Exemplos práticos**:
+  - Exemplo console (fluxo manual, simulando callback).
+  - Exemplo ASP.NET Core (redirect + callback).
+  todos: [{"id":"definir-estruturas-projeto","content":"Definir estrutura de projetos .NET (biblioteca principal, samples e testes) para o SDK SIEG Auth.","status":"pending"},{"id":"modelar-config-e-tokens","content":"Definir modelos de configuração (SiegOAuthOptions) e modelos de token (SiegToken, SiegTemporaryToken) com base na documentação da SIEG.","status":"pending"},{"id":"design-interfaces-publicas","content":"Definir interfaces públicas ISiegAuthClient e ISiegTokenStore, incluindo métodos e assinaturas assíncronas.","status":"pending"},{"id":"fluxo-autenticacao","content":"Detalhar o fluxo de autenticação OAuth 2.0 (URL, callback, generate-token, refresh, revoke) e como o SDK expõe esse fluxo.","status":"pending"},{"id":"erros-logging-extensao","content":"Definir estratégia de tratamento de erros, logging opcional e pontos de extensibilidade para multi-tenant e módulos futuros (APIs fiscais).","status":"pending"}]
+
+[Tool result] CreatePlan
+
+user:
+<attached_files>
+
+<code_selection path="c:\Users\fgaim\.cursor\plans\sdk-sieg-auth-dotnet_d802c384.plan.md" lines="1-168">
+L1:# Plano do SDK SIEG Auth (.NET)
+L2:
+L3:## 1. Objetivo e escopo inicial
+L4:
+L5:- **Objetivo principal**: Criar um SDK em .NET que encapsule todo o fluxo de autenticação com a SIEG (OAuth 2.0 descrito em `https://integracoes.sieg.com/sistema-externo/docs/api-key-2`), para ser usado por sistemas emissores de nota fiscal.
+L6:- **Escopo desta primeira versão**:
+L7:  - Construção de URL de autenticação (AuthorizeAccess).
+L8:  - Tratamento do retorno na URL de callback (token temporário).
+L9:  - Chamada do endpoint `generate-token` para obter o token definitivo.
+L10:  - Renovação com `refresh` e revogação com `revoke`.
+L11:  - Modelos de dados de token e abstração de armazenamento.
+L12:  - Não incluir ainda os endpoints fiscais em si (NFe etc.), apenas deixar o SDK pronto para anexar módulos de API depois.
+L13:
+L14:## 2. Requisitos e premissas
+L15:
+L16:- **Plataforma**: .NET (sugerido .NET 8, mas mantendo compatibilidade possível com .NET 6+).
+L17:- **Uso previsto**:
+L18:  - Sistemas emissores de nota (desktop, web ou serviços) usam o SDK para integrar com a SIEG.
+L19:  - O SDK não assume tipo de interface (UI-agnostic): ele apenas fornece URLs, modelos e chamadas HTTP.
+L20:- **Multi-conta**:
+L21:  - Deve permitir que o integrador gerencie **várias contas SIEG** se quiser (multi-tenant), sem engessar como single-tenant.
+L22:  - A distinção de contas será responsabilidade do integrador via uma chave (por exemplo `tenantId` ou `empresaId`) usada no armazenamento de tokens.
+L23:
+L24:## 3. Estrutura de projeto sugerida
+L25:
+L26:- **Projeto principal**: `[src/Sieg.Auth/Sieg.Auth.csproj](src/Sieg.Auth/Sieg.Auth.csproj)`
+L27:  - Biblioteca de classes com:
+L28:    - Interfaces públicas (contratos do SDK).
+L29:    - Implementações padrão de autenticação.
+L30:    - Modelos de configuração e modelos de token.
+L31:- **Projeto de exemplos** (futuro): `[samples/Sieg.Auth.Samples.Console](samples/Sieg.Auth.Samples.Console)`
+L32:  - Exemplo simples de fluxo completo: gerar URL, receber token temporário, trocar por definitivo, salvar token.
+L33:- **Projeto de testes** (futuro): `[tests/Sieg.Auth.Tests](tests/Sieg.Auth.Tests)`
+L34:  - Testes unitários para fluxo de autenticação e parse de respostas.
+L35:
+L36:## 4. Design da API pública de autenticação
+L37:
+L38:### 4.1. Modelos de configuração
+L39:
+L40:- `**SiegOAuthOptions**`
+L41:  - **Propriedades principais**:
+L42:    - `ClientId` (obrigatório).
+L43:    - `RedirectUri` (callback configurada na SIEG).
+L44:    - `BaseAuthorizeUrl` (default: `"https://app.sieg.com/AuthorizeAccess.aspx"`).
+L45:    - `BaseApiUrl` para endpoints `generate-token`, `refresh`, `revoke` (configurável para ambientes de teste/homologação, se houver).
+L46:    - `DefaultAccessLevel` (`read`, `write`, `fullAccess`), opcional.
+L47:  - Objetivo: concentrar toda a configuração de acesso à SIEG em um único objeto.
+L48:
+L49:### 4.2. Modelos de domínio (tokens)
+L50:
+L51:- `**SiegToken**` (resultado de `generate-token`):
+L52:  - `AccessToken` (token definitivo usado nas requisições).
+L53:  - `ExpiresAt` ou `ExpiresIn`.
+L54:  - `RefreshToken` (se a SIEG expuser).
+L55:  - Campos adicionais conforme o JSON real da SIEG.
+L56:- `**SiegTemporaryToken**`:
+L57:  - Representa o token temporário recebido na URL de callback (geralmente string simples + metadados).
+L58:
+L59:### 4.3. Interfaces principais
+L60:
+L61:- `**ISiegAuthClient**` (principal ponto de entrada):
+L62:  - `string BuildAuthorizationUrl(string state, string? accessLevel = null)`
+L63:    - Monta a URL conforme a documentação (`clientId`, `state`, `accessLevel`).
+L64:  - `Task<SiegToken> ExchangeTemporaryTokenAsync(string temporaryToken, CancellationToken ct = default)`
+L65:    - Usa o token temporário para chamar `generate-token`.
+L66:  - `Task<SiegToken> RefreshTokenAsync(string refreshToken, CancellationToken ct = default)`
+L67:    - Chama endpoint `refresh` para renovar o token definitivo.
+L68:  - `Task RevokeTokenAsync(string accessTokenOrRefreshToken, CancellationToken ct = default)`
+L69:    - Chama endpoint `revoke`.
+L70:- `**ISiegTokenStore**` (abstração de armazenamento de tokens):
+L71:  - `Task<SiegToken?> GetTokenAsync(string accountKey, CancellationToken ct = default)`
+L72:  - `Task SaveTokenAsync(string accountKey, SiegToken token, CancellationToken ct = default)`
+L73:  - `Task DeleteTokenAsync(string accountKey, CancellationToken ct = default)`
+L74:  - `accountKey` é definido pelo integrador (por exemplo CNPJ, ID da empresa, ou ID interno).
+L75:
+L76:### 4.4. Implementação padrão
+L77:
+L78:- `**SiegAuthClient**`
+L79:  - Implementa `ISiegAuthClient`.
+L80:  - Recebe em construtor:
+L81:    - `SiegOAuthOptions`.
+L82:    - `HttpClient` ou `IHttpClientFactory`.
+L83:    - `ISiegTokenStore` (opcional; pode ter implementação em memória por padrão).
+L84:  - Responsabilidades:
+L85:    - Montar query string da URL de autenticação.
+L86:    - Serializar/deserializar JSON dos endpoints OAuth 2.0 da SIEG.
+L87:    - Mapear erros HTTP em exceções específicas do SDK.
+L88:- **Implementações de `ISiegTokenStore` incluídas**:
+L89:  - `InMemorySiegTokenStore` (para cenários simples, testes, ou apps de linha de comando).
+L90:  - Extensões futuras para `IDistributedCache` / banco de dados podem ser fornecidas depois.
+L91:
+L92:## 5. Fluxo de autenticação suportado pelo SDK
+L93:
+L94:### 5.1. Visão de alto nível (mermaid)
+L95:
+L96:```mermaid
+L97:sequenceDiagram
+L98:  participant App as EmissorNFe
+L99:  participant Browser as Browser
+L100:  participant Sieg as SiegOAuth
+L101:  participant SDK as SiegAuthClient
+L102:
+L103:  App->>SDK: BuildAuthorizationUrl(state, accessLevel)
+L104:  SDK-->>App: urlAutorizacao
+L105:  App->>Browser: Redireciona para urlAutorizacao
+L106:  Browser->>Sieg: GET AuthorizeAccess.aspx
+L107:  Sieg-->>Browser: Tela de login e permissão
+L108:  Browser-->>App: Redirect para RedirectUri?tempToken=...
+L109:  App->>SDK: ExchangeTemporaryTokenAsync(tempToken)
+L110:  SDK->>Sieg: POST generate-token
+L111:  Sieg-->>SDK: tokenDefinitivo (30 dias)
+L112:  SDK-->>App: SiegToken
+L113:  App->>SDK: (opcional) SaveTokenAsync(accountKey, token)
+L114:```
+L115:
+L116:
+L117:
+L118:### 5.2. Interação com a aplicação emissora
+L119:
+L120:- O SDK **não abre navegador** diretamente (para ser genérico):
+L121:  - Ele fornece a URL; o sistema emissor decide como abrir (redirecionar HTTP, abrir WebView, abrir navegador padrão etc.).
+L122:- A aplicação emissora é responsável por:
+L123:  - Expor uma rota/callback que receba o token temporário.
+L124:  - Passar o token temporário para o `ISiegAuthClient`.
+L125:  - Definir qual será o `accountKey` (ex.: CNPJ da empresa).
+L126:
+L127:## 6. Erros, logging e extensibilidade
+L128:
+L129:### 6.1. Tratamento de erros
+L130:
+L131:- Criar exceções específicas, por exemplo:
+L132:  - `SiegAuthException` (base).
+L133:  - `SiegHttpException` (para erros HTTP não esperados).
+L134:  - `SiegTokenExpiredException` (se detectarmos expiração localmente).
+L135:- Incluir mensagens de erro amigáveis e detalhes técnicos para debug.
+L136:
+L137:### 6.2. Logging
+L138:
+L139:- Não depender de uma lib específica de logging.
+L140:- Usar `ILogger<ISiegAuthClient>` via DI quando disponível (ASP.NET Core) ou uma interface interna opcional de logger.
+L141:
+L142:### 6.3. Extensibilidade
+L143:
+L144:- Mantê-lo **orientado a interfaces** (`ISiegAuthClient`, `ISiegTokenStore`).
+L145:- Permitir herança ou composição para cenários customizados (por exemplo, integrador que quer adicionar telemetria própria).
+L146:
+L147:## 7. Futuras extensões (fora do escopo imediato)
+L148:
+L149:- **Módulos de API**:
+L150:  - `SiegFiscalClient` para endpoints fiscais (NFe, NFSe, etc.), reutilizando o token definitivo.
+L151:- **Suporte a API Key e JWT**:
+L152:  - Expor um namespace separado `Sieg.ApiKey` caso a SIEG ofereça outro modo de autenticação além do OAuth 2.0.
+L153:- **Helpers por tipo de aplicação**:
+L154:  - Extensões para ASP.NET Core (middlewares, handlers de callback, filtros).
+L155:  - Helpers específicos para WPF/WinForms se necessário.
+L156:
+L157:## 8. Documentação e exemplos
+L158:
+L159:- **README principal** explicando:
+L160:  - Como configurar `SiegOAuthOptions`.
+L161:  - Como montar a URL de autorização.
+L162:  - Como lidar com o callback.
+L163:  - Como armazenar tokens por empresa/cliente.
+L164:- **Exemplos práticos**:
+L165:  - Exemplo console (fluxo manual, simulando callback).
+L166:  - Exemplo ASP.NET Core (redirect + callback).
+L167:
+L168:
+</code_selection>
+
+</attached_files>
+<user_query>
+Implement the plan as specified, it is attached for your reference. Do NOT edit the plan file itself.
+
+To-do's from the plan have already been created. Do not create them again. Mark them as in_progress as you work, starting with the first one. Don't stop until you have completed all the to-dos.
+</user_query>
+
+assistant:
+[Thinking] **Clarifying ApplyPatch usage**
+
+I realize that with each ApplyPatch call, I can’t run anything else concurrently. It’s okay to combine multiple hunks within a single file per call, but not multiple files; one file at a time. If I need to create many new files, I’ll just call ApplyPatch one after another. Shell's `cat > file << 'EOF’` is discouraged for writing files, so I'll stick to using ApplyPatch, and don’t forget to call ReadLints after edits for checking errors.
+**Organizing project tasks**
+
+The plan mentions 'futuro,' but my focus should be on creating directories with a simple README as a start, and then shift to the main library. Once that’s done, I’ll mark the first todo as completed and the second as in progress. Following the guideline of not stopping until all todos are done, I need to implement tasks 2-5, which involve models, definitions, and error handling. I’ll also ensure to run tests with `dotnet build` and `dotnet test` if applicable. First, I need to use Read on the plan file before moving forward.
+**Setting up tasks with tools**
+
+I can combine TodoWrite and Shell with multi_tool_use.parallel, which will handle multiple functions like Read, Shell, and TodoWrite. So, my first call will involve using multi_tool_use.parallel to do a few things: I’ll set the first todo to in progress while leaving the others pending. Then, I’ll use Shell commands `pwd` to get the root directory and `ls` to check the contents. Lastly, I’ll read the plan file path. Sounds straightforward enough!
+[Tool call] TodoWrite
+  todos: [{"id":"definir-estruturas-projeto","content":"Definir estrutura de projetos .NET (biblioteca principal, samples e testes) para o SDK SIEG Auth.","status":"in_progress"},{"id":"modelar-config-e-tokens","content":"Definir modelos de configuração (SiegOAuthOptions) e modelos de token (SiegToken, SiegTemporaryToken) com base na documentação da SIEG.","status":"pending"},{"id":"design-interfaces-publicas","content":"Definir interfaces públicas ISiegAuthClient e ISiegTokenStore, incluindo métodos e assinaturas assíncronas.","status":"pending"},{"id":"fluxo-autenticacao","content":"Detalhar o fluxo de autenticação OAuth 2.0 (URL, callback, generate-token, refresh, revoke) e como o SDK expõe esse fluxo.","status":"pending"},{"id":"erros-logging-extensao","content":"Definir estratégia de tratamento de erros, logging opcional e pontos de extensibilidade para multi-tenant e módulos futuros (APIs fiscais).","status":"pending"}]
+  merge: true
+[Tool call] Shell
+  command: pwd
+  description: Get workspace root path
+  block_until_ms: 9418
+[Tool call] Shell
+  command: ls
+  description: List workspace root contents
+  block_until_ms: 7688
+[Tool call] Read
+  path: c:\Users\fgaim\.cursor\plans\sdk-sieg-auth-dotnet_d802c384.plan.md
+
+[Tool result] TodoWrite
+
+[Tool result] Shell
+
+[Tool result] Shell
+
+[Tool result] Read
+
+assistant:
+[Thinking] I'm thinking about how to approach this script. It tries to use `Set-Location` and then run a command. If `Set-Location` is successful, the output should reflect that. I want to first execute `pwd` with the required permissions, then follow up with `ls`, and finally create the desired structure. It feels like a logical flow, and I'm aiming to make sure each step is executed properly to achieve the outcome I want.
+Vou montar a estrutura do projeto .NET (`src/Sieg.Auth`) e depois adicionar as classes/interfaces do SDK conforme o plano, garantindo que tudo compila (`dotnet build`).
+[Tool call] Shell
+  command: pwd
+  description: Get real workspace root path with full permissions
+  required_permissions: ["all"]
+  block_until_ms: 9230
+[Tool call] Shell
+  command: ls
+  description: List workspace root contents with full permissions
+  required_permissions: ["all"]
+  block_until_ms: 9291
+
+[Tool result] Shell
+
+[Tool result] Shell
+
+assistant:
+[Thinking] **Evaluating workspace issues**
+
+It seems like I'm stuck with a path that doesn't exist. Maybe the folder name changed or the user closed the workspace, which is currently marked as "none." The Shell keeps trying to navigate to that missing path, and while not having a workspace may mean we can't create files, we should still execute commands in the default path. Yet, I still encounter a Set-Location error, preventing the script from executing correctly. So, I might still be able to create directories relative to that path.
+**Assessing execution issues**
+
+I see that Set-Location is failing. Although the error isn't terminating, the `cd` command didn't succeed, so further commands are likely running in the default location, possibly the user’s home directory. The `pwd` output isn’t shown, which makes me think the script may have aborted due to the error. It looks like the workspace is now set to "none," so we can't perform file operations. However, we've accessed a plan file, indicating access to some files. Until the user opens a folder in Cursor, we shouldn’t create project files, even though they asked me to implement a plan.
+**Understanding workspace limitations**
+
+I’m noticing that tools can’t write to the workspace because it’s currently unavailable. While we could theoretically write to an arbitrary path, Shell’s sandbox may restrict that. Ideally, we should inform the user to open a folder since they can’t create a project without an active workspace. I need to communicate that there’s no workspace open right now and ask them to select a folder. Meanwhile, I can still design code textually, but the user asked me to implement a plan, which means I actually need to modify files. However, given the workspace constraint, that's a challenge.
+**Investigating path issues**
+
+I’m noticing that ApplyPatch might fail if the path isn’t under the workspace. We could try using the absolute path `C:\Users\fgaim\OneDrive\Área de Trabalho\src...`, but Set-Location shows that the directory doesn't exist on the host. It seems like there might be an issue with accent encoding; ‘Área de Trabalho’ could be misrepresented as `�?rea de Trabalho`. Since it indicates the actual folder exists but isn't resolving correctly, we might try using a short path equivalent, like `C:\Users\fgaim\OneDrive\Desktop\Oauth 2.0`.
+**Determining project directory**
+
+I noticed that the terminals folder path is `C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0`. This can serve as the workspace root. Tools like ApplyPatch and Read reference absolute paths, but we previously accessed a plan file from a different location. For our code, we need to focus on the projects directory. While I can’t use Shell to list files, I can utilize Glob/Read to check if any existing files are in that project, so let’s go ahead and call Glob to inspect it.
+[Tool call] Glob
+  target_directory: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0
+  glob_pattern: **/*
+
+[Tool result] Glob
+
+assistant:
+[Thinking] **Considering project structure**
+
+I’m thinking that the “Add File” function probably creates parent directories automatically, so we can just go ahead with it. First, I should create the solution and project files, but while making a .sln by hand is possible, it gets unwieldy. It's not strictly necessary; I could simply make the csproj and code files instead. The user might want future sample and test projects, so I could create empty directories or perhaps stubs for those as a nice touch.
+**Examining sample project creation**
+
+I’m considering whether I should skip the sample/test csproj since designing the entire sample isn't required right now. It seems like the best approach is just to create the necessary directories and a README. I’m unsure if the “ApplyPatch Add File” can handle nested directory creation, so I’ll attempt to create the file and its parent directories directly. If that fails, I expect an error. I also plan to add a README at the root level to describe usage. Let's craft the csproj content for the class library targeting net8.0 next.
+Vou criar a estrutura `src/Sieg.Auth` com o `Sieg.Auth.csproj` e depois adicionar as classes/interfaces do SDK dentro desse projeto.
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Sieg.Auth.csproj
++<Project Sdk="Microsoft.NET.Sdk">
++
++  <PropertyGroup>
++    <TargetFramework>net8.0</TargetFramework>
++    <ImplicitUsings>enable</ImplicitUsings>
++    <Nullable>enable</Nullable>
++  </PropertyGroup>
++
++</Project>
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Sieg.Auth.csproj
+
+[Tool result] Read
+
+assistant:
+[Tool call] TodoWrite
+  todos: [{"id":"definir-estruturas-projeto","content":"Definir estrutura de projetos .NET (biblioteca principal, samples e testes) para o SDK SIEG Auth.","status":"completed"},{"id":"modelar-config-e-tokens","content":"Definir modelos de configuração (SiegOAuthOptions) e modelos de token (SiegToken, SiegTemporaryToken) com base na documentação da SIEG.","status":"in_progress"}]
+  merge: true
+
+[Tool result] TodoWrite
+
+assistant:
+[Thinking] **Setting up the project structure**
+
+I've created the csproj and marked the first todo as completed, with the second one in progress. It might be a good idea to also create a directory for samples/tests, which isn't required but would be nice. The todo was for the main library, samples, and tests; we only set up the library project so far. Now, I’ll implement the config and token models by creating the necessary .cs files in the `Sieg.Auth` namespace.
+**Implementing SiegOAuthOptions**
+
+I'm working on the `SiegOAuthOptions` class, setting up properties like ClientId, RedirectUri, BaseAuthorizeUrl, and BaseApiUrl. The BaseAuthorizeUrl is straightforward, but I'm a bit unsure about the BaseApiUrl since I don't have the exact path. To make it configurable, I could leave it as a nullable property and avoid setting a default value, letting the integrator define it. If it's null when called, I can throw an error to handle that safely.
+**Designing the SiegToken Model**
+
+I think I'll go with requiring values for properties in the `SiegToken` model but set them through the constructor to prevent null values. This way, I can maintain options pattern compatibility. Using `Uri` is a better choice than keeping it as a string, although we don't know the exact endpoint paths for generating, refreshing, or revoking tokens. For property names that map to JSON, I’m adding `JsonPropertyName` attributes based on generic guesses since the documentation is limited.
+**Defining the SiegToken Structure**
+
+I'm finalizing the `SiegToken` structure and including properties like `RefreshToken`, `ExpiresAt`, and `CreatedAt`. Though the plan didn't mention `CreatedAt` or methods like checking expiration, I'll add them for convenience. I could keep things simple with only essential properties, but I need to map JSON fields that might contain names like `token` or `expireDate`. Since I don't have the exact names yet, I'll set up a flexible approach with a `Dictionary<string, object?> AdditionalData` for unknowns. Creating a separate internal DTO class for deserializing is more code than necessary right now, though!
+**Implementing Required Classes**
+
+Since the user asked for implementation "as specified," I just need to create these three classes: `SiegToken`, `SiegTemporaryToken`, and potentially a response DTO later. I'll start with `SiegToken` without serialization attributes for now, as we can adapt during HTTP calls later. 
+
+For `SiegToken`, I'll include essential properties and ensure that access tokens are validated in the constructor. The `IsExpired` method will check expiry with an optional tolerance. For `SiegTemporaryToken`, well, it could simply wrap a string, but I’ll follow the plan and create it regardless. Let's sequence the file creations and add them.
+Vou criar as classes `SiegOAuthOptions`, `SiegToken` e `SiegTemporaryToken` dentro de `src/Sieg.Auth`, seguindo o desenho do plano.
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegOAuthOptions.cs
++using System;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Opções de configuração para autenticação OAuth 2.0 com a SIEG.
++/// </summary>
++public sealed class SiegOAuthOptions
++{
++    /// <summary>
++    /// ClientId fornecido pela SIEG para identificar o sistema externo.
++    /// </summary>
++    public string ClientId { get; set; } = string.Empty;
++
++    /// <summary>
++    /// URL de callback configurada na SIEG (RedirectUri).
++    /// </summary>
++    public Uri? RedirectUri { get; set; }
++
++    /// <summary>
++    /// URL base para a tela de autorização OAuth 2.0.
++    /// Normalmente: https://app.sieg.com/AuthorizeAccess.aspx
++    /// </summary>
++    public Uri BaseAuthorizeUrl { get; set; } =
++        new("https://app.sieg.com/AuthorizeAccess.aspx");
++
++    /// <summary>
++    /// URL base para os endpoints OAuth 2.0 da API (generate-token, refresh, revoke).
++    /// A documentação da SIEG deve informar o valor correto; mantenha configurável.
++    /// </summary>
++    public Uri? BaseApiUrl { get; set; }
++
++    /// <summary>
++    /// Nível de acesso padrão solicitado na URL de autenticação
++    /// (read, write ou fullAccess). Pode ser sobrescrito por chamada.
++    /// </summary>
++    public string? DefaultAccessLevel { get; set; }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegToken.cs
++using System;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Representa o token definitivo obtido via generate-token,
++/// utilizado para consumir as APIs da SIEG.
++/// </summary>
++public sealed class SiegToken
++{
++    /// <summary>
++    /// Token de acesso definitivo a ser enviado nas requisições à API SIEG.
++    /// </summary>
++    public string AccessToken { get; }
++
++    /// <summary>
++    /// Momento em que o token expira.
++    /// </summary>
++    public DateTimeOffset ExpiresAt { get; }
++
++    /// <summary>
++    /// Token de atualização, quando fornecido pela SIEG.
++    /// </summary>
++    public string? RefreshToken { get; }
++
++    /// <summary>
++    /// Dados adicionais retornados pela SIEG que o integrador queira preservar.
++    /// Isso permite acomodar campos específicos sem travar o modelo.
++    /// </summary>
++    public IReadOnlyDictionary<string, object?> AdditionalData { get; }
++
++    public SiegToken(
++        string accessToken,
++        DateTimeOffset expiresAt,
++        string? refreshToken = null,
++        IReadOnlyDictionary<string, object?>? additionalData = null)
++    {
++        if (string.IsNullOrWhiteSpace(accessToken))
++        {
++            throw new ArgumentException("AccessToken não pode ser vazio.", nameof(accessToken));
++        }
++
++        AccessToken = accessToken;
++        ExpiresAt = expiresAt;
++        RefreshToken = refreshToken;
++        AdditionalData = additionalData ?? new Dictionary<string, object?>();
++    }
++
++    /// <summary>
++    /// Indica se o token está expirado considerando uma folga (clock skew).
++    /// </summary>
++    /// <param name="now">Instante de comparação (UTC por padrão).</param>
++    /// <param name="tolerance">Folga para antecipar a expiração (padrão 1 minuto).</param>
++    public bool IsExpired(
++        DateTimeOffset? now = null,
++        TimeSpan? tolerance = null)
++    {
++        var current = now ?? DateTimeOffset.UtcNow;
++        var skew = tolerance ?? TimeSpan.FromMinutes(1);
++        return current >= ExpiresAt - skew;
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegTemporaryToken.cs
++using System;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Representa o token temporário retornado na URL de callback
++/// após o login/autorização na SIEG.
++/// </summary>
++public sealed class SiegTemporaryToken
++{
++    /// <summary>
++    /// Valor bruto do token temporário (geralmente obtido de um parâmetro de querystring).
++    /// </summary>
++    public string Value { get; }
++
++    /// <summary>
++    /// Instante em que o token foi recebido/criado localmente.
++    /// O token em si possui validade curta (por exemplo, 10 minutos).
++    /// </summary>
++    public DateTimeOffset CreatedAt { get; }
++
++    public SiegTemporaryToken(string value, DateTimeOffset? createdAt = null)
++    {
++        if (string.IsNullOrWhiteSpace(value))
++        {
++            throw new ArgumentException("O valor do token temporário não pode ser vazio.", nameof(value));
++        }
++
++        Value = value;
++        CreatedAt = createdAt ?? DateTimeOffset.UtcNow;
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth"]
+
+[Tool result] ReadLints
+
+assistant:
+[Tool call] TodoWrite
+  todos: [{"id":"modelar-config-e-tokens","content":"Definir modelos de configuração (SiegOAuthOptions) e modelos de token (SiegToken, SiegTemporaryToken) com base na documentação da SIEG.","status":"completed"},{"id":"design-interfaces-publicas","content":"Definir interfaces públicas ISiegAuthClient e ISiegTokenStore, incluindo métodos e assinaturas assíncronas.","status":"in_progress"}]
+  merge: true
+
+[Tool result] TodoWrite
+
+assistant:
+[Thinking] 
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\ISiegAuthClient.cs
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Contrato principal para autenticação com a SIEG via OAuth 2.0.
++/// </summary>
++public interface ISiegAuthClient
++{
++    /// <summary>
++    /// Monta a URL de autenticação OAuth 2.0 para redirecionar o usuário
++    /// à tela de login/autorização da SIEG.
++    /// </summary>
++    /// <param name="state">
++    /// Identificador interno do integrador (para correlação de requisições).
++    /// </param>
++    /// <param name="accessLevel">
++    /// Nível de acesso solicitado (read, write, fullAccess). Se nulo, usa o padrão
++    /// configurado em <see cref="SiegOAuthOptions.DefaultAccessLevel"/>.
++    /// </param>
++    /// <returns>URL completa de autenticação para redirecionar o usuário.</returns>
++    string BuildAuthorizationUrl(string state, string? accessLevel = null);
++
++    /// <summary>
++    /// Troca um token temporário (recebido via callback) por um token definitivo
++    /// utilizando o endpoint generate-token.
++    /// </summary>
++    /// <param name="temporaryToken">Token temporário recebido na URL de callback.</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task<SiegToken> ExchangeTemporaryTokenAsync(
++        string temporaryToken,
++        CancellationToken ct = default);
++
++    /// <summary>
++    /// Renova um token definitivo utilizando o endpoint refresh.
++    /// </summary>
++    /// <param name="refreshToken">Refresh token associado ao token definitivo atual.</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task<SiegToken> RefreshTokenAsync(
++        string refreshToken,
++        CancellationToken ct = default);
++
++    /// <summary>
++    /// Revoga um token na SIEG utilizando o endpoint revoke.
++    /// </summary>
++    /// <param name="accessTokenOrRefreshToken">
++    /// Token a ser revogado (access token ou refresh token), conforme a API da SIEG.
++    /// </param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task RevokeTokenAsync(
++        string accessTokenOrRefreshToken,
++        CancellationToken ct = default);
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\ISiegTokenStore.cs
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Abstração de armazenamento de tokens por conta/empresa.
++/// Implementações podem usar memória, banco de dados, cache distribuído etc.
++/// </summary>
++public interface ISiegTokenStore
++{
++    /// <summary>
++    /// Obtém o token associado a uma conta específica.
++    /// </summary>
++    /// <param name="accountKey">Chave que identifica a conta (ex.: CNPJ, ID interno).</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task<SiegToken?> GetTokenAsync(
++        string accountKey,
++        CancellationToken ct = default);
++
++    /// <summary>
++    /// Persiste o token associado a uma conta específica.
++    /// </summary>
++    /// <param name="accountKey">Chave que identifica a conta (ex.: CNPJ, ID interno).</param>
++    /// <param name="token">Token a ser salvo.</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task SaveTokenAsync(
++        string accountKey,
++        SiegToken token,
++        CancellationToken ct = default);
++
++    /// <summary>
++    /// Remove o token associado a uma conta específica.
++    /// </summary>
++    /// <param name="accountKey">Chave que identifica a conta (ex.: CNPJ, ID interno).</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task DeleteTokenAsync(
++        string accountKey,
++        CancellationToken ct = default);
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth"]
+
+[Tool result] ReadLints
+
+assistant:
+[Tool call] TodoWrite
+  todos: [{"id":"design-interfaces-publicas","content":"Definir interfaces públicas ISiegAuthClient e ISiegTokenStore, incluindo métodos e assinaturas assíncronas.","status":"completed"},{"id":"fluxo-autenticacao","content":"Detalhar o fluxo de autenticação OAuth 2.0 (URL, callback, generate-token, refresh, revoke) e como o SDK expõe esse fluxo.","status":"in_progress"}]
+  merge: true
+
+[Tool result] TodoWrite
+
+assistant:
+[Thinking] 
+[Tool call] WebSearch
+  search_term: SIEG OAuth 2.0 generate-token refresh revoke integracoes.sieg.com
+  explanation: Descobrir os endpoints exatos (URL e formato) de generate-token, refresh e revoke da API OAuth 2.0 da SIEG para implementar o fluxo HTTP do SDK com o máximo de precisão possível.
+
+[Tool result] WebSearch
+
+assistant:
+[Thinking] **Considering HTTP design choices**
+
+I'm planning to implement HTTP in a flexible way, using JSON for requests and responses, specifically expecting to get an `accessToken`. However, I'm unsure about the property names, so I could create a `SiegTokenResponse` with placeholders, or allow users to map the fields dynamically. My initial methods will be stubs that raise `NotImplementedException` until we have proper documentation. Even though the plan suggests "implementar fluxo," I’d prefer to aim for a complete generic pipeline.
+**Deciding on method implementation**
+
+I'm leaning towards implementing methods that will throw an error if `BaseApiUrl` is null. I'll design the JSON to have generically named properties like `temporaryToken` and `refreshToken`, but I'll document that integrators might need to make some name adjustments. The user requested an SDK for SIEG, and while they’ll refine it later, it’s important to get it as accurate as possible upfront. Since I know SIEG uses terms like "token temporário" and "token definitivo," I’ll set up the JSON for the expected endpoints.
+**Considering implementation strategies**
+
+I’m thinking about using WebFetch to quickly check the SIEG OAuth 2.0 documentation, but failure could happen, which is okay since it’s not essential for what the user needs right now. I’ll design the HTTP layer to be flexible with placeholders. My idea is to create DTOs with `[JsonPropertyName]` attributes for expected generic names. For instance, the request to generate a token would have `GenerateTokenRequest` with properties like `Token` mapped to either "token" or "temporaryToken." However, since we can't currently test the endpoints, I might mark methods with a `NotImplementedException`, even if the user wants actual code.
+**Implementing HTTP generically**
+
+I think it's more beneficial to implement HTTP in a generic way, aligning parameter names with the documentation we reviewed. The plan only outlined endpoint names, not the specific request bodies. However, I know the typical structure for OAuth token endpoints, which involves fields like `access_token`. 
+
+So, I'll set up requests like this: 
+
+- For generating a token: POST to `${BaseApiUrl}/generate-token` with `{ "temporaryToken": "<token>" }`.
+- For refreshing: POST `${BaseApiUrl}/refresh` using `{ "refreshToken": "<refresh>" }`.
+- For revoking: POST `${BaseApiUrl}/revoke` with `{ "token": "<token>" }`.
+
+I'll assume responses will be in JSON format and adopt snake-case to match common OAuth standards for properties like `access_token` and `expires_in`.
+**Designing the token system**
+
+I'm focusing on creating a minimal implementation for the `SiegToken` using `DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn ?? 0);`. Additionally, I can keep the entire JSON document using `JsonDocument` or a dictionary. For the request DTO, I'll set up `GenerateTokenRequest` with a property for `temporary_token`. Even if property names don't match exactly, API rejections can be adjusted downstream.
+
+Regarding logging, I’m deciding not to include the `Microsoft.Extensions.Logging` package for now due to environment constraints. Instead, I can define my own minimal logger interface or just use an `Action<string>` for optional logging, encouraging flexibility.
+**Implementing SiegAuthClient and Exceptions**
+
+I'm designing the `SiegAuthClient` class to manage OAuth processes, initializing it with an `HttpClient`, `SiegOAuthOptions`, and an optional `ISiegTokenStore`. I’ll implement a method to build the authorization URL, ensuring it correctly formats query parameters.
+
+Next, I'm establishing an `InMemorySiegTokenStore` class, which allows retrieval of tokens in a thread-safe manner. While the plan hints at future integration, I won’t include direct token store interactions yet.
+
+For exceptions, I need to create specific exception classes like `SiegAuthException`, `SiegHttpException`, and `SiegTokenExpiredException` to manage errors effectively. I’ll keep these organized in an `Exceptions` folder for clarity.
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Exceptions\SiegAuthException.cs
++using System;
++
++namespace Sieg.Auth.Exceptions;
++
++/// <summary>
++/// Exceção base para erros de autenticação com a SIEG.
++/// </summary>
++public class SiegAuthException : Exception
++{
++    public SiegAuthException()
++    {
++    }
++
++    public SiegAuthException(string message)
++        : base(message)
++    {
++    }
++
++    public SiegAuthException(string message, Exception innerException)
++        : base(message, innerException)
++    {
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Exceptions\SiegHttpException.cs
++using System;
++using System.Net;
++
++namespace Sieg.Auth.Exceptions;
++
++/// <summary>
++/// Representa um erro HTTP retornado pelos endpoints OAuth 2.0 da SIEG.
++/// </summary>
++public sealed class SiegHttpException : SiegAuthException
++{
++    public HttpStatusCode StatusCode { get; }
++
++    public string? ResponseBody { get; }
++
++    public SiegHttpException(
++        HttpStatusCode statusCode,
++        string? responseBody,
++        string message)
++        : base(message)
++    {
++        StatusCode = statusCode;
++        ResponseBody = responseBody;
++    }
++
++    public SiegHttpException(
++        HttpStatusCode statusCode,
++        string? responseBody,
++        string message,
++        Exception innerException)
++        : base(message, innerException)
++    {
++        StatusCode = statusCode;
++        ResponseBody = responseBody;
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Exceptions\SiegTokenExpiredException.cs
++using System;
++
++namespace Sieg.Auth.Exceptions;
++
++/// <summary>
++/// Exceção lançada quando um token é utilizado após sua expiração.
++/// </summary>
++public sealed class SiegTokenExpiredException : SiegAuthException
++{
++    public SiegTokenExpiredException()
++    {
++    }
++
++    public SiegTokenExpiredException(string message)
++        : base(message)
++    {
++    }
++
++    public SiegTokenExpiredException(string message, Exception innerException)
++        : base(message, innerException)
++    {
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Update File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegToken.cs
+@@
+-using System;
+-
+-namespace Sieg.Auth;
+-
+-/// <summary>
+-/// Representa o token definitivo obtido via generate-token,
+-/// utilizado para consumir as APIs da SIEG.
+-/// </summary>
+-public sealed class SiegToken
+-{
+-    /// <summary>
+-    /// Token de acesso definitivo a ser enviado nas requisições à API SIEG.
+-    /// </summary>
+-    public string AccessToken { get; }
+-
+-    /// <summary>
+-    /// Momento em que o token expira.
+-    /// </summary>
+-    public DateTimeOffset ExpiresAt { get; }
+-
+-    /// <summary>
+-    /// Token de atualização, quando fornecido pela SIEG.
+-    /// </summary>
+-    public string? RefreshToken { get; }
+-
+-    /// <summary>
+-    /// Dados adicionais retornados pela SIEG que o integrador queira preservar.
+-    /// Isso permite acomodar campos específicos sem travar o modelo.
+-    /// </summary>
+-    public IReadOnlyDictionary<string, object?> AdditionalData { get; }
+-
+-    public SiegToken(
+-        string accessToken,
+-        DateTimeOffset expiresAt,
+-        string? refreshToken = null,
+-        IReadOnlyDictionary<string, object?>? additionalData = null)
+-    {
+-        if (string.IsNullOrWhiteSpace(accessToken))
+-        {
+-            throw new ArgumentException("AccessToken não pode ser vazio.", nameof(accessToken));
+-        }
+-
+-        AccessToken = accessToken;
+-        ExpiresAt = expiresAt;
+-        RefreshToken = refreshToken;
+-        AdditionalData = additionalData ?? new Dictionary<string, object?>();
+-    }
+-
+-    /// <summary>
+-    /// Indica se o token está expirado considerando uma folga (clock skew).
+-    /// </summary>
+-    /// <param name="now">Instante de comparação (UTC por padrão).</param>
+-    /// <param name="tolerance">Folga para antecipar a expiração (padrão 1 minuto).</param>
+-    public bool IsExpired(
+-        DateTimeOffset? now = null,
+-        TimeSpan? tolerance = null)
+-    {
+-        var current = now ?? DateTimeOffset.UtcNow;
+-        var skew = tolerance ?? TimeSpan.FromMinutes(1);
+-        return current >= ExpiresAt - skew;
+-    }
+-}
++using System;
++using System.Collections.Generic;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Representa o token definitivo obtido via generate-token,
++/// utilizado para consumir as APIs da SIEG.
++/// </summary>
++public sealed class SiegToken
++{
++    /// <summary>
++    /// Token de acesso definitivo a ser enviado nas requisições à API SIEG.
++    /// </summary>
++    public string AccessToken { get; }
++
++    /// <summary>
++    /// Momento em que o token expira.
++    /// </summary>
++    public DateTimeOffset ExpiresAt { get; }
++
++    /// <summary>
++    /// Token de atualização, quando fornecido pela SIEG.
++    /// </summary>
++    public string? RefreshToken { get; }
++
++    /// <summary>
++    /// Dados adicionais retornados pela SIEG que o integrador queira preservar.
++    /// Isso permite acomodar campos específicos sem travar o modelo.
++    /// </summary>
++    public IReadOnlyDictionary<string, object?> AdditionalData { get; }
++
++    public SiegToken(
++        string accessToken,
++        DateTimeOffset expiresAt,
++        string? refreshToken = null,
++        IReadOnlyDictionary<string, object?>? additionalData = null)
++    {
++        if (string.IsNullOrWhiteSpace(accessToken))
++        {
++            throw new ArgumentException("AccessToken não pode ser vazio.", nameof(accessToken));
++        }
++
++        AccessToken = accessToken;
++        ExpiresAt = expiresAt;
++        RefreshToken = refreshToken;
++        AdditionalData = additionalData ?? new Dictionary<string, object?>();
++    }
++
++    /// <summary>
++    /// Indica se o token está expirado considerando uma folga (clock skew).
++    /// </summary>
++    /// <param name="now">Instante de comparação (UTC por padrão).</param>
++    /// <param name="tolerance">Folga para antecipar a expiração (padrão 1 minuto).</param>
++    public bool IsExpired(
++        DateTimeOffset? now = null,
++        TimeSpan? tolerance = null)
++    {
++        var current = now ?? DateTimeOffset.UtcNow;
++        var skew = tolerance ?? TimeSpan.FromMinutes(1);
++        return current >= ExpiresAt - skew;
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\InMemorySiegTokenStore.cs
++using System.Collections.Concurrent;
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Implementação em memória de <see cref="ISiegTokenStore"/> adequada para
++/// cenários simples, testes e aplicações de linha de comando.
++/// </summary>
++public sealed class InMemorySiegTokenStore : ISiegTokenStore
++{
++    private readonly ConcurrentDictionary<string, SiegToken> _tokens = new();
++
++    public Task<SiegToken?> GetTokenAsync(
++        string accountKey,
++        CancellationToken ct = default)
++    {
++        ct.ThrowIfCancellationRequested();
++
++        _tokens.TryGetValue(accountKey, out var token);
++        return Task.FromResult(token);
++    }
++
++    public Task SaveTokenAsync(
++        string accountKey,
++        SiegToken token,
++        CancellationToken ct = default)
++    {
++        ct.ThrowIfCancellationRequested();
++
++        _tokens[accountKey] = token;
++        return Task.CompletedTask;
++    }
++
++    public Task DeleteTokenAsync(
++        string accountKey,
++        CancellationToken ct = default)
++    {
++        ct.ThrowIfCancellationRequested();
++
++        _tokens.TryRemove(accountKey, out _);
++        return Task.CompletedTask;
++    }
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegAuthClient.cs
++using System;
++using System.Net.Http;
++using System.Text;
++using System.Text.Json;
++using System.Text.Json.Serialization;
++using System.Threading;
++using System.Threading.Tasks;
++using Sieg.Auth.Exceptions;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Implementação padrão de <see cref="ISiegAuthClient"/> que encapsula
++/// o fluxo de autenticação OAuth 2.0 com a SIEG.
++/// </summary>
++public sealed class SiegAuthClient : ISiegAuthClient
++{
++    private static readonly JsonSerializerOptions JsonOptions = new()
++    {
++        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
++        PropertyNameCaseInsensitive = true
++    };
++
++    private readonly HttpClient _httpClient;
++    private readonly SiegOAuthOptions _options;
++    private readonly ISiegTokenStore? _tokenStore;
++
++    /// <summary>
++    /// Cria uma nova instância de <see cref="SiegAuthClient"/>.
++    /// </summary>
++    /// <param name="httpClient">
++    /// HttpClient a ser utilizado para chamadas HTTP. Deve ser reutilizado (ex.: injetado via DI).
++    /// </param>
++    /// <param name="options">Opções de configuração da integração com a SIEG.</param>
++    /// <param name="tokenStore">
++    /// Armazenamento opcional de tokens por conta/empresa.
++    /// </param>
++    public SiegAuthClient(
++        HttpClient httpClient,
++        SiegOAuthOptions options,
++        ISiegTokenStore? tokenStore = null)
++    {
++        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
++        _options = options ?? throw new ArgumentNullException(nameof(options));
++        _tokenStore = tokenStore;
++
++        if (string.IsNullOrWhiteSpace(_options.ClientId))
++        {
++            throw new ArgumentException("ClientId deve ser configurado em SiegOAuthOptions.", nameof(options));
++        }
++
++        if (_options.BaseAuthorizeUrl is null)
++        {
++            throw new ArgumentException("BaseAuthorizeUrl deve ser configurada em SiegOAuthOptions.", nameof(options));
++        }
++    }
++
++    /// <inheritdoc />
++    public string BuildAuthorizationUrl(string state, string? accessLevel = null)
++    {
++        if (string.IsNullOrWhiteSpace(state))
++        {
++            throw new ArgumentException("state não pode ser vazio.", nameof(state));
++        }
++
++        var level = accessLevel ?? _options.DefaultAccessLevel;
++
++        var builder = new UriBuilder(_options.BaseAuthorizeUrl);
++
++        // A documentação SIEG prevê os parâmetros: clientId, state e accessLevel.
++        var query = new StringBuilder();
++        AppendQueryParam(query, "clientId", _options.ClientId);
++        AppendQueryParam(query, "state", state);
++
++        if (!string.IsNullOrWhiteSpace(level))
++        {
++            AppendQueryParam(query, "accessLevel", level!);
++        }
++
++        if (string.IsNullOrEmpty(builder.Query))
++        {
++            builder.Query = query.ToString().TrimStart('&');
++        }
++        else
++        {
++            var existing = builder.Query.TrimStart('?');
++            builder.Query = string.IsNullOrEmpty(existing)
++                ? query.ToString().TrimStart('&')
++                : existing + query;
++        }
++
++        return builder.Uri.ToString();
++    }
++
++    /// <inheritdoc />
++    public async Task<SiegToken> ExchangeTemporaryTokenAsync(
++        string temporaryToken,
++        CancellationToken ct = default)
++    {
++        if (string.IsNullOrWhiteSpace(temporaryToken))
++        {
++            throw new ArgumentException("O token temporário não pode ser vazio.", nameof(temporaryToken));
++        }
++
++        var endpoint = BuildEndpointUri("generate-token");
++        var payload = new GenerateTokenRequest
++        {
++            TemporaryToken = temporaryToken
++        };
++
++        var response = await PostJsonAsync<GenerateTokenRequest, SiegTokenResponse>(
++            endpoint,
++            payload,
++            ct).ConfigureAwait(false);
++
++        return ToDomainToken(response);
++    }
++
++    /// <inheritdoc />
++    public async Task<SiegToken> RefreshTokenAsync(
++        string refreshToken,
++        CancellationToken ct = default)
++    {
++        if (string.IsNullOrWhiteSpace(refreshToken))
++        {
++            throw new ArgumentException("O refresh token não pode ser vazio.", nameof(refreshToken));
++        }
++
++        var endpoint = BuildEndpointUri("refresh");
++        var payload = new RefreshTokenRequest
++        {
++            RefreshToken = refreshToken
++        };
++
++        var response = await PostJsonAsync<RefreshTokenRequest, SiegTokenResponse>(
++            endpoint,
++            payload,
++            ct).ConfigureAwait(false);
++
++        return ToDomainToken(response);
++    }
++
++    /// <inheritdoc />
++    public async Task RevokeTokenAsync(
++        string accessTokenOrRefreshToken,
++        CancellationToken ct = default)
++    {
++        if (string.IsNullOrWhiteSpace(accessTokenOrRefreshToken))
++        {
++            throw new ArgumentException("O token a ser revogado não pode ser vazio.", nameof(accessTokenOrRefreshToken));
++        }
++
++        var endpoint = BuildEndpointUri("revoke");
++        var payload = new RevokeTokenRequest
++        {
++            Token = accessTokenOrRefreshToken
++        };
++
++        // Geralmente o endpoint de revogação não retorna um corpo relevante.
++        await PostJsonAsync<RevokeTokenRequest, object?>(
++            endpoint,
++            payload,
++            ct).ConfigureAwait(false);
++    }
++
++    private Uri BuildEndpointUri(string relativePath)
++    {
++        if (_options.BaseApiUrl is null)
++        {
++            throw new SiegAuthException(
++                "BaseApiUrl deve ser configurada em SiegOAuthOptions para chamar os endpoints OAuth 2.0 da SIEG.");
++        }
++
++        // Garante que o caminho seja combinado corretamente (com ou sem / no final/início).
++        return new Uri(_options.BaseApiUrl, relativePath);
++    }
++
++    private static void AppendQueryParam(StringBuilder builder, string name, string value)
++    {
++        if (builder.Length == 0)
++        {
++            builder.Append('&');
++        }
++
++        builder
++            .Append('&')
++            .Append(Uri.EscapeDataString(name))
++            .Append('=')
++            .Append(Uri.EscapeDataString(value));
++    }
++
++    private async Task<TResponse> PostJsonAsync<TRequest, TResponse>(
++        Uri uri,
++        TRequest payload,
++        CancellationToken ct)
++    {
++        using var request = new HttpRequestMessage(HttpMethod.Post, uri)
++        {
++            Content = new StringContent(
++                JsonSerializer.Serialize(payload, JsonOptions),
++                Encoding.UTF8,
++                "application/json")
++        };
++
++        using var response = await _httpClient.SendAsync(request, ct).ConfigureAwait(false);
++
++        var content = response.Content is null
++            ? string.Empty
++            : await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
++
++        if (!response.IsSuccessStatusCode)
++        {
++            throw new SiegHttpException(
++                response.StatusCode,
++                content,
++                $"Chamada HTTP para '{uri}' retornou código {(int)response.StatusCode} ({response.StatusCode}).");
++        }
++
++        if (typeof(TResponse) == typeof(object) || typeof(TResponse) == typeof(object?))
++        {
++            // Chamadas que não exigem corpo de resposta.
++            return default!;
++        }
++
++        try
++        {
++            var result = JsonSerializer.Deserialize<TResponse>(content, JsonOptions);
++            if (result == null)
++            {
++                throw new SiegAuthException(
++                    $"Não foi possível desserializar a resposta de '{uri}' para o tipo '{typeof(TResponse).Name}'.");
++            }
++
++            return result;
++        }
++        catch (JsonException ex)
++        {
++            throw new SiegAuthException(
++                $"Erro ao desserializar a resposta JSON de '{uri}'.",
++                ex);
++        }
++    }
++
++    private static SiegToken ToDomainToken(SiegTokenResponse response)
++    {
++        if (string.IsNullOrWhiteSpace(response.AccessToken))
++        {
++            throw new SiegAuthException(
++                "A resposta da SIEG não contém um access_token válido.");
++        }
++
++        // Em muitas implementações OAuth, expires_in é informado em segundos.
++        var expiresInSeconds = response.ExpiresIn ?? 0;
++        var expiresAt = DateTimeOffset.UtcNow.AddSeconds(expiresInSeconds);
++
++        return new SiegToken(
++            response.AccessToken,
++            expiresAt,
++            response.RefreshToken);
++    }
++
++    #region DTOs HTTP internos
++
++    // Os nomes das propriedades podem ser ajustados conforme a documentação real da SIEG.
++
++    private sealed class GenerateTokenRequest
++    {
++        [JsonPropertyName("temporary_token")]
++        public string TemporaryToken { get; set; } = string.Empty;
++    }
++
++    private sealed class RefreshTokenRequest
++    {
++        [JsonPropertyName("refresh_token")]
++        public string RefreshToken { get; set; } = string.Empty;
++    }
++
++    private sealed class RevokeTokenRequest
++    {
++        [JsonPropertyName("token")]
++        public string Token { get; set; } = string.Empty;
++    }
++
++    private sealed class SiegTokenResponse
++    {
++        [JsonPropertyName("access_token")]
++        public string? AccessToken { get; set; }
++
++        [JsonPropertyName("expires_in")]
++        public long? ExpiresIn { get; set; }
++
++        [JsonPropertyName("refresh_token")]
++        public string? RefreshToken { get; set; }
++    }
++
++    #endregion
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth"]
+
+[Tool result] ReadLints
+
+assistant:
+[Tool call] TodoWrite
+  todos: [{"id":"fluxo-autenticacao","content":"Detalhar o fluxo de autenticação OAuth 2.0 (URL, callback, generate-token, refresh, revoke) e como o SDK expõe esse fluxo.","status":"completed"},{"id":"erros-logging-extensao","content":"Definir estratégia de tratamento de erros, logging opcional e pontos de extensibilidade para multi-tenant e módulos futuros (APIs fiscais).","status":"in_progress"}]
+  merge: true
+
+[Tool result] TodoWrite
+
+assistant:
+[Thinking] **Considering logging and extensibility**
+
+I’m looking at the remaining tasks about errors, logging, and extensibility. We’ve established exceptions and an in-memory store aligned with interfaces. While logging hasn't yet been implemented, we could mention extension points instead of creating a logger right now. I think we should define a strategy for logging—perhaps introducing a minimal `ISiegAuthLogger` as an optional parameter. However, adding complexity with future integrations might not be necessary. A simple interface could be beneficial.
+**Implementing logging functionality**
+
+I’ve created the `SiegAuthClient` constructor signature, and it’s not a big deal to add an optional logger parameter. I’m defining an interface called `ISiegAuthLogger` for various logging methods. Inside `SiegAuthClient`, I’ll include a private readonly `_logger` of this type and modify the constructor to accept it as an optional parameter. I can add a few simple log calls to demonstrate the logging extension point without adding external dependencies. It won't be the same as `ILogger<ISiegAuthClient>`, but it accommodates a custom interface. I'll update the necessary files accordingly.
+**Planning extensibility and logging**
+
+I see we’re talking about "points of extensibility for multi-tenant and future modules." We've already aligned things with interfaces, but I think I can add some summary comments to clarify extensions. For instance, in `SiegAuthClient`, we have `ISiegTokenStore`, but it’s not utilized in methods. I might consider adding helper methods to persist tokens automatically based on account keys, although that would require storing the account key. As for error handling, I think we’ve done well with custom exceptions. To wrap this up, we just need the logging interface for clarity and perhaps some top-level documentation. The implementation steps are clear: create the `ISiegAuthLogger.cs` file, update `SiegAuthClient` to incorporate the optional logger in the constructor, and add logs in key areas, while ensuring we don’t log sensitive information.
+**Updating logging in SiegAuthClient**
+
+I need to log messages like `'Chamando endpoint generate-token'` without including token content—good idea! To patch `SiegAuthClient.cs`, I’ll import the logger namespace from `Sieg.Auth.Logging`. I’ll create the `ISiegAuthLogger` interface in the `Sieg.Auth` namespace. 
+
+Next, I want to modify `SiegAuthClient` by adding a private field for the logger and updating the constructor to include it as an optional parameter, ensuring it’s placed at the end after `tokenStore`. I'll also add helper methods for logging, using `_logger?.LogDebug("...")` for simplicity, though we might consider an extension method later. Now, let's decide where to log.
+**Implementing logging tweaks**
+
+I’m considering some logging examples for our methods. In `BuildAuthorizationUrl`, I can log debug information with state and access level but avoid token details for safety. Before making an HTTP call, I can log a message like `'POST {endpoint}'`, ensuring no sensitive information is exposed. If there's an HTTP error, I should log the error message and status code, while generally not including the response body. 
+
+For methods like `PostJsonAsync`, I can log at the beginning and after the request. Since `_logger` is an instance field, I can access it without issues. I’ll also need to create a root README file for general usage instructions—it’s optional but could be helpful. I plan to execute these logging tweaks first before finalizing the README.
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\ISiegAuthLogger.cs
++using System;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Interface de logging opcional utilizada pelo <see cref="SiegAuthClient"/>.
++/// 
++/// Essa interface é propositalmente simples para não criar dependência
++/// direta de nenhum framework de logging. O integrador pode implementar
++/// um adaptador para <c>ILogger&lt;T&gt;</c> ou qualquer outra solução.
++/// </summary>
++public interface ISiegAuthLogger
++{
++    void LogDebug(string message);
++
++    void LogInformation(string message);
++
++    void LogWarning(string message);
++
++    void LogError(string message, Exception? exception = null);
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Update File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegAuthClient.cs
+@@
+-    private readonly HttpClient _httpClient;
+-    private readonly SiegOAuthOptions _options;
+-    private readonly ISiegTokenStore? _tokenStore;
++    private readonly HttpClient _httpClient;
++    private readonly SiegOAuthOptions _options;
++    private readonly ISiegTokenStore? _tokenStore;
++    private readonly ISiegAuthLogger? _logger;
+@@
+-    /// <param name="tokenStore">
+-    /// Armazenamento opcional de tokens por conta/empresa.
+-    /// </param>
++    /// <param name="tokenStore">Armazenamento opcional de tokens por conta/empresa.</param>
++    /// <param name="logger">Logger opcional para diagnóstico.</param>
+     public SiegAuthClient(
+         HttpClient httpClient,
+         SiegOAuthOptions options,
+-        ISiegTokenStore? tokenStore = null)
++        ISiegTokenStore? tokenStore = null,
++        ISiegAuthLogger? logger = null)
+     {
+         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+         _options = options ?? throw new ArgumentNullException(nameof(options));
+         _tokenStore = tokenStore;
++        _logger = logger;
+@@
+-        var level = accessLevel ?? _options.DefaultAccessLevel;
++        var level = accessLevel ?? _options.DefaultAccessLevel;
++
++        _logger?.LogDebug(
++            $"Montando URL de autenticação SIEG com state='{state}' e accessLevel='{level ?? "(null)"}'.");
+@@
+         var builder = new UriBuilder(_options.BaseAuthorizeUrl);
+@@
+         if (string.IsNullOrWhiteSpace(temporaryToken))
+         {
+             throw new ArgumentException("O token temporário não pode ser vazio.", nameof(temporaryToken));
+         }
+ 
++        _logger?.LogInformation("Iniciando troca de token temporário por token definitivo (generate-token).");
++
+         var endpoint = BuildEndpointUri("generate-token");
+@@
+         if (string.IsNullOrWhiteSpace(refreshToken))
+         {
+             throw new ArgumentException("O refresh token não pode ser vazio.", nameof(refreshToken));
+         }
+ 
++        _logger?.LogInformation("Iniciando renovação de token definitivo (refresh).");
++
+         var endpoint = BuildEndpointUri("refresh");
+@@
+         if (string.IsNullOrWhiteSpace(accessTokenOrRefreshToken))
+         {
+             throw new ArgumentException("O token a ser revogado não pode ser vazio.", nameof(accessTokenOrRefreshToken));
+         }
+ 
++        _logger?.LogInformation("Iniciando revogação de token (revoke).");
++
+         var endpoint = BuildEndpointUri("revoke");
+@@
+         using var request = new HttpRequestMessage(HttpMethod.Post, uri)
+         {
+@@
+-        using var response = await _httpClient.SendAsync(request, ct).ConfigureAwait(false);
++        _logger?.LogDebug($"Enviando requisição POST para '{uri}'.");
++
++        using var response = await _httpClient.SendAsync(request, ct).ConfigureAwait(false);
+@@
+         if (!response.IsSuccessStatusCode)
+         {
++            _logger?.LogError(
++                $"Chamada HTTP para '{uri}' falhou com código {(int)response.StatusCode} ({response.StatusCode}).",
++                null);
++
+             throw new SiegHttpException(
+                 response.StatusCode,
+                 content,
+@@
+             var result = JsonSerializer.Deserialize<TResponse>(content, JsonOptions);
+             if (result == null)
+             {
+                 throw new SiegAuthException(
+                     $"Não foi possível desserializar a resposta de '{uri}' para o tipo '{typeof(TResponse).Name}'.");
+             }
++
++            _logger?.LogDebug($"Resposta HTTP de '{uri}' desserializada com sucesso para '{typeof(TResponse).Name}'.");
+ 
+             return result;
+         }
+         catch (JsonException ex)
+         {
++            _logger?.LogError($"Erro ao desserializar a resposta JSON de '{uri}'.", ex);
++
+             throw new SiegAuthException(
+                 $"Erro ao desserializar a resposta JSON de '{uri}'.",
+                 ex);
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth"]
+
+[Tool result] ReadLints
+
+assistant:
+[Tool call] TodoWrite
+  todos: [{"id":"erros-logging-extensao","content":"Definir estratégia de tratamento de erros, logging opcional e pontos de extensibilidade para multi-tenant e módulos futuros (APIs fiscais).","status":"completed"}]
+  merge: true
+
+[Tool result] TodoWrite
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\README.md
++# Sieg.Auth SDK (OAuth 2.0 SIEG)
++
++Biblioteca .NET para encapsular o fluxo de autenticação OAuth 2.0 da SIEG,
++pensada para sistemas emissores de nota fiscal.
++
++## Estrutura
++
++- `src/Sieg.Auth` — biblioteca principal com:
++  - `SiegOAuthOptions` — configuração (ClientId, URLs, accessLevel padrão).
++  - `SiegToken` e `SiegTemporaryToken` — modelos de token definitivo e temporário.
++  - `ISiegAuthClient` / `SiegAuthClient` — cliente de autenticação OAuth 2.0.
++  - `ISiegTokenStore` / `InMemorySiegTokenStore` — abstração de armazenamento de tokens.
++  - Exceções em `Exceptions/` (`SiegAuthException`, `SiegHttpException`, `SiegTokenExpiredException`).
++
++## Uso básico
++
++```csharp
++using Sieg.Auth;
++
++var options = new SiegOAuthOptions
++{
++    ClientId = "seu-client-id",
++    RedirectUri = new Uri("https://seu-sistema.com/sieg/callback"),
++    BaseApiUrl = new Uri("https://integracoes.sieg.com/sistema-externo/oauth2/"),
++    DefaultAccessLevel = "read"
++};
++
++var httpClient = new HttpClient();
++var tokenStore = new InMemorySiegTokenStore();
++var authClient = new SiegAuthClient(httpClient, options, tokenStore);
++
++// 1) Redirecionar usuário para autenticação SIEG
++var state = Guid.NewGuid().ToString("N");
++var authUrl = authClient.BuildAuthorizationUrl(state);
++// -> redirecionar para authUrl
++
++// 2) Após o callback da SIEG, você recebe um token temporário (por querystring)
++// string temporaryToken = ...;
++// var finalToken = await authClient.ExchangeTemporaryTokenAsync(temporaryToken);
++// await tokenStore.SaveTokenAsync("minha-conta", finalToken);
++```
++
++> Importante: Os caminhos exatos de `BaseApiUrl` e o formato JSON dos endpoints
++> (`generate-token`, `refresh`, `revoke`) devem seguir a documentação oficial da SIEG
++> em `https://integracoes.sieg.com/sistema-externo/docs/api-key-2` e seções relacionadas.
++*** End Patch`}/>
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+### Visão geral do que foi implementado
+
+- **Projeto principal**: Criei o projeto de biblioteca `Sieg.Auth` em `src/Sieg.Auth` com `Sieg.Auth.csproj` alvo em **.NET 8**.
+- **Configuração e modelos de token**:
+  - `SiegOAuthOptions`: encapsula `ClientId`, `RedirectUri`, `BaseAuthorizeUrl`, `BaseApiUrl` e `DefaultAccessLevel`.
+  - `SiegToken`: token definitivo com `AccessToken`, `ExpiresAt`, `RefreshToken`, `AdditionalData` e método `IsExpired`.
+  - `SiegTemporaryToken`: representa o token temporário retornado no callback, com `Value` e `CreatedAt`.
+- **Contratos públicos**:
+  - `ISiegAuthClient`: define `BuildAuthorizationUrl`, `ExchangeTemporaryTokenAsync`, `RefreshTokenAsync`, `RevokeTokenAsync`.
+  - `ISiegTokenStore`: abstração de armazenamento de tokens por `accountKey`.
+  - `ISiegAuthLogger`: logger opcional simples para não acoplar a nenhum framework.
+- **Implementações principais**:
+  - `SiegAuthClient`: implementa todo o fluxo OAuth 2.0:
+    - Monta a URL de autenticação (`AuthorizeAccess.aspx?clientId=...&state=...&accessLevel=...`).
+    - Chama os endpoints `generate-token`, `refresh` e `revoke` sobre `BaseApiUrl` via `HttpClient`, usando JSON.
+    - Converte a resposta em `SiegToken`, tratando erros HTTP com `SiegHttpException` e problemas de JSON com `SiegAuthException`.
+    - Usa `ISiegAuthLogger` para logs opcionais (sem expor valores de token).
+  - `InMemorySiegTokenStore`: implementação em memória de `ISiegTokenStore` usando `ConcurrentDictionary`.
+- **Tratamento de erros e extensibilidade**:
+  - Exceções dedicadas em `Exceptions/`:
+    - `SiegAuthException` (base), `SiegHttpException` (HTTP com `StatusCode` e `ResponseBody`), `SiegTokenExpiredException`.
+  - Design orientado a interfaces (`ISiegAuthClient`, `ISiegTokenStore`, `ISiegAuthLogger`), permitindo:
+    - Armazenar tokens em banco/cache distribuído implementando `ISiegTokenStore`.
+    - Integrar com qualquer sistema de logging implementando `ISiegAuthLogger`.
+    - Reaproveitar `SiegToken` em futuros clientes fiscais (ex.: `SiegFiscalClient`).
+- **Documentação**:
+  - `README.md` na raiz explicando a estrutura do SDK e dando um exemplo de uso básico com `SiegOAuthOptions`, `SiegAuthClient` e `InMemorySiegTokenStore`.
+
+Se você quiser, no próximo passo posso criar um **projeto de exemplo (console ou ASP.NET Core)** usando esse SDK para mostrar o fluxo completo (redirect, callback, troca de token, refresh).
+
+user:
+<user_query>
+Precisamos primeiro alinhar as coisas antes de partimos para testes , preciso te detalhar como funciona o Oauth da Sieg e como fazer da forma que estou pensando ! 
+</user_query>
+
+assistant:
+[Thinking] **Clarifying OAuth alignment**
+
+The user wants to align on how Sieg OAuth works and discuss their design before tests. We’ve already implemented the SDK, but now I need to prompt them for details about their flow and any constraints they have. I want to keep the conversation concise and ask targeted questions. I’ll summarize the current implementation, invite corrections, and ask key clarifying questions like about specific endpoints, user login locations, or token storage. I'll encourage them to share more about their documentation and explanations.
+Perfeito, vamos alinhar tudo antes de pensar em teste ou uso.
+
+Para eu ajustar o SDK exatamente ao que você está pensando, me detalha, por favor, estes pontos (pode ser em texto livre, passo a passo):
+
+- **1. Fluxo real do OAuth da SIEG na sua visão**  
+  Descreve o passo a passo do usuário e do sistema emissor:  
+  - de onde ele sai, para qual URL vai,  
+  - qual callback recebe o quê (nome do parâmetro do token temporário, por exemplo),  
+  - em que momento você quer chamar `generate-token`, `refresh` e `revoke`.
+
+- **2. Endpoints e contratos exatos**  
+  Se você tiver:  
+  - URLs completas dos endpoints (`generate-token`, `refresh`, `revoke`),  
+  - exemplo de body de request e response (JSON) que a SIEG usa hoje,  
+  - nomes exatos dos campos (por exemplo `temporaryToken` vs `temporary_token`, etc.).
+
+- **3. Forma de uso que você quer para o SDK**  
+  Como você imagina o código do emissor usando o SDK?  
+  Exemplo: “num app web quero chamar `BuildAuthorizationUrl`, redirecionar, no callback receber `tempToken` e chamar um método X que já salva o token para o CNPJ Y…”.
+
+Manda esses detalhes do jeito que preferir (copiando trechos da doc ou descrevendo) e eu ajusto o design/implementação do SDK para bater 100% com esse fluxo.
+
+user:
+<user_query>
+you
+</user_query>
+
+assistant:
+[Thinking] **Inviting further details**
+
+It looks like the user switched from Portuguese to just "you," which might be a typo or perhaps they're testing things out. They mentioned needing to detail the OAuth flow and what they're thinking. Now, with "you," they might be prompting me to continue or ask for something. I should respond concisely and invite them to share more about their thoughts. It's important to be clear and not overly verbose!
+Beleza, estou aqui pra isso.
+
+Quando puder, me conta em detalhes (em português mesmo):
+
+- **Como é o fluxo OAuth da SIEG que você quer seguir** (passo a passo, inclusive nomes de parâmetros na URL/callback).
+- **Quais endpoints/JSON reais você tem** (`generate-token`, `refresh`, `revoke`, exemplos de request/response).
+- **Como você imagina o uso do SDK pelo emissor** (um exemplo de código ideal).
+
+A partir disso eu ajusto o design/implementação do SDK exatamente ao seu modelo.
+
+user:
+<user_query>
+Vamo lá começando por uma duvida primaria , o sistema emissor precisa passar o state na URL para receber o token referente ao state informado , esse state eu acredito que possa ser informado na URL da seguinte forma, ao utilizar o SDK a logica leva o cliente para o login do sistema dele caso ainda não esteja logado , caso ja esteja logado , vai para URL de autorização da Sieg , só não to conseguindo completar esse fluxo na minha cabeça , a parte do state ta me deixando confuso , consegue me ajudar com alguma ideia ?
+</user_query>
+
+assistant:
+[Thinking] **Clarifying state management**
+
+I need to clarify that the state is opaque to Sieg, and only I must understand how it correlates. The state can remain the same across multiple redirects—like during a login followed by Sieg—because the login process is internal. Sieg doesn’t require state for his login redirect but needs it when calling him. The user mentioned that they need to pass the state in the URL to receive the correct token, which is echoed back by Sieg. I'll help them build the logic accordingly.
+**Structuring control flow**
+
+It's the app's job to manage the control flow, while the SDK simply builds the Sieg URL for the given state. I could propose some high-level controllers for clarity. For instance, the first step could be to authorize and check if the user is logged in. If not, redirect them to the login page; otherwise, generate the state and call the SDK. 
+
+For the callback, I would use the SDK to exchange the temporary token. I need to keep the explanation clear and concise while developing a conceptual flow, possibly with a small diagram.
+### Entendendo o `state` no fluxo da SIEG
+
+Primeiro ponto importante: **o `state` não é usado para “calcular” o token na SIEG**.  
+Ele serve para **você** correlacionar:
+
+- “Essa volta da SIEG pertence a qual empresa/usuário/integração minha?”
+
+A SIEG só faz isso:
+
+- Você manda `?...&clientId=XXX&state=ALGUMA_COISA&accessLevel=read`
+- Depois do login/autorização, ela volta para seu callback com `...&state=ALGUMA_COISA` de volta.
+
+Então o truque é: **você escolhe o `state` de um jeito que faça sentido pro seu sistema**.
+
+---
+
+### Onde entra o login do seu sistema
+
+O fluxo que você descreveu pode ser assim:
+
+1. **Usuário clica em “Conectar com SIEG” no seu emissor**  
+   - Ele chama uma rota sua, por exemplo:  
+     `GET /sieg/authorize?empresaId=123`
+
+2. **Sua rota verifica se o usuário está logado**  
+   - **Se NÃO estiver logado**:  
+     - Redireciona para sua tela de login, com um `returnUrl` apontando de volta para `/sieg/authorize?empresaId=123`.  
+       Ex.: `/login?returnUrl=/sieg/authorize?empresaId=123`
+   - **Se JÁ estiver logado**: vai para o passo 3.
+
+3. **Usuário autenticado, agora sim você chama a SIEG**  
+   - Aqui você decide o `state`. Exemplos:
+     - Um `GUID` que você grava em tabela/cache (`state -> empresaId, usuarioId, etc.`).
+     - Ou um valor codificado que já contenha o contexto (`empresaId|usuarioId|nonce` codificado).
+   - Com esse `state`, você usa o SDK para montar a URL:
+
+     Exemplo conceitual:
+
+     ```csharp
+     var state = Guid.NewGuid().ToString("N");
+     SalvarNoBanco(state, empresaId, usuarioId); // mapeia o contexto
+
+     var authUrl = sdk.BuildAuthorizationUrl(state, "read");
+     return Redirect(authUrl);
+     ```
+
+4. **SIEG faz login/autorização e redireciona para seu callback**  
+   - Algo como:  
+     `/sieg/callback?tempToken=XYZ&state=GUID_QUE_VOCE_MANDOU`
+
+5. **Na sua rota de callback você lê o `state` e o `tempToken`**  
+   - Com o `state`, você recupera o contexto que salvou antes:
+     - qual empresa, qual usuário, etc.
+   - Com o `tempToken`, você chama o SDK:
+
+     ```csharp
+     var tokenDefinitivo = await sdk.ExchangeTemporaryTokenAsync(tempToken);
+     await tokenStore.SaveTokenAsync(empresaId, tokenDefinitivo);
+     ```
+
+---
+
+### Onde o `state` aparece nesse fluxo
+
+Repara que:
+
+- **Durante o login do SEU sistema**, você **não precisa** mandar o `state` ainda para lugar nenhum externo.  
+  - Você só passa `returnUrl` interno: é tudo “dentro de casa”.
+- **Você só envia o `state` para fora (para a SIEG)** quando faz o redirect final para `AuthorizeAccess.aspx`.
+
+Ou seja, o fluxo fica:
+
+1. Usuário → `/sieg/authorize?empresaId=123`
+2. (se preciso) `/login?returnUrl=/sieg/authorize?empresaId=123`
+3. Volta logado para `/sieg/authorize?empresaId=123`
+4. Gera `state`, salva mapeamento, monta URL SIEG com `state`, redireciona
+5. Callback SIEG → `/sieg/callback?tempToken=...&state=...`
+6. Você usa `state` para recuperar o contexto + trocar `tempToken` por `tokenDefinitivo`.
+
+---
+
+### Como o SDK entra na história
+
+No desenho que você está propondo, o SDK faz **só a parte SIEG**:
+
+- `BuildAuthorizationUrl(state, accessLevel)`  
+  (você já está com o usuário logado, e decide o `state`)
+- `ExchangeTemporaryTokenAsync(tempToken)`  
+  (na callback, depois que a SIEG te devolve `tempToken` + `state`)
+- Depois, se quiser, `RefreshTokenAsync` / `RevokeTokenAsync`.
+
+O SDK **não precisa saber nada do seu login interno**;  
+ele só recebe `state` como string e devolve URL, e mexe com tokens da SIEG.
+
+---
+
+### Resumindo a ideia chave do `state`
+
+- **O `state` é seu**: você escolhe o valor e o que ele representa.
+- Use o `state` para amarrar:
+  - a requisição original → empresa/usuário/contexto,
+  - com a volta do callback da SIEG.
+- O login do seu sistema é um “pré-passo” antes de você chamar o SDK;  
+  ele não conflita com o `state`, e você não precisa misturar os dois.
+
+Se quiser, no próximo passo posso desenhar isso em forma de diagrama (mermaid) e/ou um exemplo concreto de rotas (`/sieg/authorize` e `/sieg/callback`) em C# ASP.NET Core para deixar cristalino.
+
+user:
+<user_query>
+Perfeito entendi o state , a minha ideia é facilitar ao maximo para os sistemas que vão utilizar esse codigo então vou te passar todas as informações sobre a autenticação na SIEG e depois vamos organizar de uma forma que fique muito simples de qualquer sistema implementar isso aqui
+</user_query>
+
+assistant:
+[Thinking] **Acknowledging user needs**
+
+The user has a clear understanding of the state and wants to share all the authentication information. They plan to design a straightforward integration surface, which is great! I should confirm this and invite them to paste or describe those details they mentioned. I need to keep my response concise since the desired verbosity is low. No tools are required for this step, which makes it easier to proceed!
+Ótimo, é exatamente o caminho certo.
+
+Manda tudo que você tiver da autenticação SIEG (pode ser em blocos):
+
+- URLs exatas (AuthorizeAccess, generate-token, refresh, revoke, etc.).
+- Exemplo de **request/response JSON** de cada endpoint.
+- Nomes dos parâmetros na **URL de callback** (ex.: `tempToken`, `state`, outros).
+- Qualquer regra especial (tempo de expiração, scopes, accessLevel, etc.).
+
+Depois disso eu te proponho uma **API mínima** do SDK do tipo:
+
+- “chama esse método aqui para gerar URL”  
+- “chama esse aqui no callback e te devolvo o token já pronto pra usar/salvar”
+
+e vamos refinando até ficar “plug and play” para qualquer sistema.
+
+user:
+<user_query>
+https://api.sieg.com/api/v1/oauth/refresh 
+https://api.sieg.com/api/v1/oauth/generate-token 
+https://api.sieg.com/api/v1/oauth/refresh 
+
+Segue as 3 URLS dos endpoints
+</user_query>
+
+assistant:
+[Thinking] **Acknowledging endpoints**
+
+The user provided endpoints, and I need to acknowledge that there seems to be a duplication issue with the note refresh, and it looks like the revoke endpoint is probably missing. I should also note that generate-token and refresh share the same base URL. It’s a good idea to ask for JSON contracts next. I’ll make sure to note the base API URL as well. I want to keep my response concise!
+Perfeito, então já alinhamos que:
+
+- **Base da API OAuth SIEG**: `https://api.sieg.com/api/v1/oauth/`
+- **Endpoints**:
+  - `generate-token` → `https://api.sieg.com/api/v1/oauth/generate-token`
+  - `refresh` → `https://api.sieg.com/api/v1/oauth/refresh`
+  - (provavelmente também existe um `revoke`, depois você me confirma o caminho exato)
+
+Próximo passo para eu cravar o SDK certinho:  
+me manda, por favor, os **exemplos de request/response JSON** que a doc mostra para:
+
+- `POST /oauth/generate-token`
+- `POST /oauth/refresh`
+- (e, se tiver) `POST /oauth/revoke`
+
+pode só colar aqui os exemplos da documentação (body de envio e body de resposta).
+
+user:
+<external_links>
+### Potentially Relevant Websearch Results
+
+You should respond as if these information are known to you. Refrain from saying "I am unable to browse the internet" or "I don't have access to the internet" or "I'm unable to provide real-time news updates". This is your internet search results. Please always cite any links you referenced from the above search results in your response in markdown format.
+
+-------
+Website URL: https://app.sieg.com/AuthorizeAccess.aspx?clientId=clientId&state=ex123&accessLevel=read
+Website Title: 
+	Login - Console SIEG
+
+Website Content:
+Sieg Logo 
+
+####  Login
+
+Bem-vindo (a)!   
+Insira seus dados para entrar na sua conta.
+
+Esqueceu a senha? 
+
+logotipo-com-legenda-azul-versão-principal 
+____
+
+</external_links>
+<user_query>
+https://api.sieg.com/api/v1/oauth/revoke 
+Segue o endpoint de revoke 
+
+https://app.sieg.com/AuthorizeAccess.aspx?clientId=clientId&state=ex123&accessLevel=read 
+Url de autorização é nesse padrão
+</user_query>
+
+assistant:
+[Thinking] **Aligning SDK configuration**
+
+I’m clarifying with the user about the endpoints and the auth URL pattern, which we've touched on in the code. They want to ensure our SDK design aligns with this high level. They provided a revoke endpoint and an example of the authorize URL pattern. I’ll explain how we’ll configure the SDK with the correct BaseAuthorizeUrl and BaseApiUrl, and also ask for JSON request/response examples. It’s crucial to clarify the callback parameter name for the temporary token too. I want to keep it concise!
+**Proposing SDK API design**
+
+I want to acknowledge the revoke endpoint and the auth pattern, and then propose a concrete SDK API surface. To start, we can configure the `SiegAuthClientOptions` with `ClientId` and `RedirectUrl`, followed by initializing the client.
+
+In the app, the `GetAuthRedirectUrl` method should return the authorization URL while generating and persisting a state. Since the user prefers minimal code for integrators, we could implement an optional state store. However, we might simplify by encoding all context in the state itself, which would make it easier for the SDK to manage without storage.
+**Clarifying state management**
+
+The user seems confused about how to manage state, so I can suggest having the SDK expose two methods: `CreateState` and `ParseState`, using a `SiegStateData` class to hold fields like TenantId, UserId, and Nonce. The integrator can create state before redirecting and parse it during the callback. 
+
+This approach simplifies correlation without needing a separate store, unless they want additional features. I'll clarify that the application flow for login and authorization is their concern and describe how the state should be used, while also requesting the missing JSON details. I'll include the citation about authorization from the search results.
+### Beleza, vamos alinhar com o que você trouxe
+
+Temos agora:
+
+- **URL de autorização** (login/consentimento SIEG):  
+  `https://app.sieg.com/AuthorizeAccess.aspx?clientId=clientId&state=ex123&accessLevel=read`  
+  (padrão confirmado pelo próprio login da SIEG [`AuthorizeAccess.aspx`](https://app.sieg.com/AuthorizeAccess.aspx?clientId=clientId&state=ex123&accessLevel=read))
+- **Base da API OAuth**: `https://api.sieg.com/api/v1/oauth/`
+  - `https://api.sieg.com/api/v1/oauth/generate-token`
+  - `https://api.sieg.com/api/v1/oauth/refresh`
+  - `https://api.sieg.com/api/v1/oauth/revoke`
+
+### Ideia de fluxo “super simples” para qualquer sistema
+
+Pensando em deixar MUITO fácil para quem for usar o SDK, a API pública poderia ficar algo assim (conceito, depois ajustamos para o código final):
+
+- **No emissor, para iniciar o fluxo**:
+
+```csharp
+// Você já sabe qual empresa/usuário está logado
+var contexto = new SiegStateContext(empresaId: "123", usuarioId: "u456");
+
+// SDK gera o state (codificado) + URL de autorização completa
+var authUrl = siegAuth.BuildAuthorizationUrlWithContext(contexto, accessLevel: "read");
+
+// O sistema só redireciona pra essa URL
+return Redirect(authUrl);
+```
+
+- **No callback da SIEG**:
+
+```csharp
+// Recebido da SIEG: ?tempToken=...&state=...
+string tempToken = Request.Query["tempToken"];
+string state = Request.Query["state"];
+
+// SDK decodifica o contexto:
+var contexto = SiegStateContext.FromState(state); // empresaId, usuarioId, etc.
+
+// Troca o token temporário pelo definitivo:
+var token = await siegAuth.ExchangeTemporaryTokenAsync(tempToken);
+
+// Sistema salva o token definitivo da SIEG associado àquela empresa:
+await tokenStore.SaveTokenAsync(contexto.EmpresaId, token);
+```
+
+Ou seja, o SDK faria:
+
+- `BuildAuthorizationUrlWithContext` → gera:
+  - o `state` codificado (por ex. base64 de um JSON com `{empresaId, usuarioId, nonce}`),
+  - a URL final `AuthorizeAccess.aspx?...`.
+- `SiegStateContext.FromState` → decodifica esse `state` na volta, sem o integrador ter que reinventar como serializar isso.
+
+Mas para deixar isso **certinho** com a SIEG, ainda me faltam 2 coisas fundamentais:
+
+1. **Os corpos de request/response dos endpoints**  
+   - `POST /api/v1/oauth/generate-token`  
+     - Qual é o body exato que a SIEG espera? Algo como:
+       - `{ "temporaryToken": "..." }` ou `{ "tokenTemporario": "..." }`?
+     - E o JSON de resposta?  
+       - Campos: `access_token`, `expires_in`, `refresh_token`, mais alguma coisa?
+   - `POST /api/v1/oauth/refresh`  
+     - Body: `{ "refresh_token": "..." }` ou outro nome?
+     - Resposta: mesmo formato do `generate-token`?
+   - `POST /api/v1/oauth/revoke`  
+     - Body: qual campo (`token`, `access_token`, `refresh_token` etc.)?
+     - Resposta: tem body ou é vazio?
+
+2. **Nome do parâmetro do token temporário no callback**  
+   - Quando a SIEG volta para sua `RedirectUri`, vem algo tipo:  
+     - `...?tempToken=...&state=...`  
+     ou  
+     - `...?token=...&state=...`  
+   - Preciso do nome exato como está na doc.
+
+Se você puder colar aqui os exemplos de JSON (request/response) da documentação e a querystring exata que a SIEG manda no callback, eu já te devolvo:
+
+- A **API pública final** do SDK (assinaturas e nomes dos métodos).
+- A forma “oficial” recomendada de uso (exemplo pronto para qualquer emissor adaptar).
+
+user:
+[Image]
+[Image]
+<image_files>
+The following images were provdied by the user and saved to the workspace for future use:
+1. C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0/assets/c__Users_fgaim_AppData_Roaming_Cursor_User_workspaceStorage_43c97cd6a42912a108423e070e9e069a_images_image-018a0e4f-9cd7-47e8-ac12-d5401ad53d04.png
+2. C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0/assets/c__Users_fgaim_AppData_Roaming_Cursor_User_workspaceStorage_43c97cd6a42912a108423e070e9e069a_images_image-2aa59ef3-8006-4f79-b845-bfe3709277f3.png
+
+These images can be copied for use in other locations.
+</image_files>
+<user_query>
+
+</user_query>
+
+assistant:
+[Thinking] **Parsing images for API tokens**
+
+I see that the user sent screenshots from Postman for the generate-token endpoint. I need to be precise in understanding what's on those images, so I'll have to read them carefully. I'll use the Read tool on the image paths the user provided to extract the necessary information accurately. This will help me provide the right assistance based on what’s in those screenshots!
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\assets\c__Users_fgaim_AppData_Roaming_Cursor_User_workspaceStorage_43c97cd6a42912a108423e070e9e069a_images_image-018a0e4f-9cd7-47e8-ac12-d5401ad53d04.png
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\assets\c__Users_fgaim_AppData_Roaming_Cursor_User_workspaceStorage_43c97cd6a42912a108423e070e9e069a_images_image-2aa59ef3-8006-4f79-b845-bfe3709277f3.png
+
+[Tool result] Read
+
+[Tool result] Read
+
+assistant:
+[Thinking] 
+### O que dá pra extrair desses prints
+
+Pelos prints do Postman, o `generate-token` da SIEG funciona assim:
+
+- **Endpoint**  
+  `POST https://api.sieg.com/api/v1/oauth/generate-token`
+
+- **Headers obrigatórios**:
+  - `X-Secret-Key: <seu-segredo>`
+  - `X-Client-Id: <seu-client-id>`
+  - `Content-Type: application/json`
+
+- **Body de requisição (JSON, PascalCase)**:
+
+```json
+{
+  "AccessToken": "kBzTsv2ESGd-XQB5Yx_iJEBbtIZX16XD5wm0ETnxwA",
+  "State": "123",
+  "RedirectUri": "https://cyclonically-denunciable-layton.ngrok-free.dev/oauth/callback"
+}
+```
+
+Ou seja, para o `generate-token`:
+
+- `AccessToken` = o **token temporário** que você recebeu da SIEG no callback anterior.
+- `State` = o mesmo `state` que você enviou na URL de autorização.
+- `RedirectUri` = a URL de callback registrada na SIEG.
+
+- **Resposta (200 OK)**:
+
+```json
+{
+  "IsSuccess": true,
+  "ErrorMessage": "",
+  "StatusCode": 200,
+  "Data": {
+    "AccessLevel": 0,
+    "AccessToken": "GfRmxJHeIwfnkhrtsIuqi2pdksw0u4sPlk8-vY1j4",
+    "TokenType": "Bearer"
+  },
+  "IsFailure": false
+}
+```
+
+O que interessa pro SDK aqui:
+
+- `Data.AccessToken` = **token definitivo** que vamos usar nas chamadas de API.
+- `Data.AccessLevel` e `Data.TokenType` podem ir como metadados (`AdditionalData`).
+- `IsSuccess / ErrorMessage / StatusCode` ajudam a montar exceções amigáveis.
+
+### Como isso encaixa no SDK (ideia de assinatura)
+
+A partir disso, o método de troca de token no SDK pode ficar mais fiel ao fluxo real da SIEG, algo como:
+
+```csharp
+Task<SiegToken> ExchangeTemporaryTokenAsync(
+    string temporaryAccessToken,
+    string state,
+    Uri redirectUri,
+    CancellationToken ct = default);
+```
+
+E internamente o SDK:
+
+- monta os headers `X-Client-Id`, `X-Secret-Key`, `Content-Type`,
+- envia o JSON exatamente nesse formato (`AccessToken`, `State`, `RedirectUri`),
+- faz o parse de `IsSuccess`, `ErrorMessage`, etc.,
+- devolve um `SiegToken` com o `Data.AccessToken` e os metadados.
+
+Depois a gente ainda pode simplificar mais (por exemplo, deixar `RedirectUri` fixo em `SiegOAuthOptions`, então o usuário só passa `temporaryAccessToken` + `state`).
+
+---
+
+### Próximo passo para fechar o desenho
+
+Agora faltam **dois pedacinhos** para eu cravar o contrato final do SDK e deixar ele “plug and play”:
+
+1. **`refresh`**  
+   - Body exato que você está usando (JSON)  
+   - Response (se segue o mesmo padrão de wrapper `IsSuccess / Data / ...`)
+
+2. **`revoke`**  
+   - Body exato (qual campo: `Token`, `AccessToken`, etc.)  
+   - Response (tem body ou só 200 OK com wrapper?)
+
+3. **Callback inicial da SIEG**  
+   - Quando você configura o `RedirectUri` e faz o primeiro fluxo OAuth, a SIEG chama sua URL como? Algo tipo:  
+     - `...?AccessToken=...&State=...`  
+     ou outro nome de parâmetro?  
+   - Se você tiver um print/postman ou a URL de exemplo, ajuda muito.
+
+Com isso em mãos, eu te devolvo o **contrato público completo** do SDK (métodos e parâmetros) já pensando em deixar o mínimo de decisões na mão do sistema emissor.
+
+user:
+[Image]
+<image_files>
+The following images were provdied by the user and saved to the workspace for future use:
+1. C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0/assets/c__Users_fgaim_AppData_Roaming_Cursor_User_workspaceStorage_43c97cd6a42912a108423e070e9e069a_images_image-2d5a48ea-251e-4ec8-a668-2b360d53f736.png
+
+These images can be copied for use in other locations.
+</image_files>
+<user_query>
+Segue o Body e a resposta da requisição , os Headers são os mesmos do generate-token
+</user_query>
+
+assistant:
+[Thinking] **Aligning SDK elements**
+
+The user wants to focus on alignment before we adjust the SDK. They just shared that we need to match the headers used in the generate-token process: X-Secret-Key, X-Client-Id, and Content-Type as app/json. I’ll summarize and propose method signatures for the SDK, noting that the generate-token body includes {AccessToken, State, RedirectUri}, and the refresh body includes {Token} with a response wrapper. Currently, they just want alignment, not refactoring. I'll respond appropriately!
+**Interpreting refresh token**
+
+I’m looking at how to interpret the refresh process. The request should be a POST to /oauth/refresh, with headers remaining the same. The request body includes the current token, and the expected response is a wrapper with fields like IsSuccess, ErrorMessage, StatusCode, and Data containing the refreshed token message. I’m thinking the SDK's RefreshTokenAsync method could return a SiegToken or possibly just a bool, since no new token is provided. However, we might still return a SiegToken and track the token's lifetime as we can’t compute the expiration exactly without config details.
+**Designing SiegToken structure**
+
+I’m planning to design the `SiegToken` with an optional `ExpiresAt`, possibly defaulting to 30 days or letting the user set their own TTL config. We've previously used ExpiresIn, but I wonder if it's adequate. Right now, it feels more about understanding rather than implementation specifics. We need to clarify the format for the revoke body and response; assuming the body includes the token is fine, but I'll ask the user for a more concrete example. 
+
+I want to present an explicit example for the refresh request and suggest the SDK method as `Task RefreshTokenAsync(string accessToken, CancellationToken)` returning either a message or a simple string. A more straightforward option might be returning `Task<SiegTokenRefreshResult>`.
+**Clarifying refresh method and details**
+
+I recognize that we already have a previous design, and I can say that once we adjust the SDK, the refresh method will send the data as we've discussed. Internally, it won't need to parse the Data if it’s simply a message. However, I still need to clarify the details for the revoke method and the callback specifics. It makes sense to ask for that information again to ensure everything is aligned. Let’s respond accordingly!
+Boa, agora ficou bem claro o `refresh`.
+
+### O que temos do `/oauth/refresh`
+
+- **Endpoint**:  
+  `POST https://api.sieg.com/api/v1/oauth/refresh`
+
+- **Headers** (iguais ao `generate-token`):  
+  - `X-Secret-Key: ...`  
+  - `X-Client-Id: ...`  
+  - `Content-Type: application/json`
+
+- **Body de requisição**:
+
+```json
+{
+  "Token": "cGRmxJHeIwfnkhrtsIuqiztpdksw0u4sPlk_8-vY1j4"
+}
+```
+
+- **Resposta (200)**:
+
+```json
+{
+  "IsSuccess": true,
+  "ErrorMessage": "",
+  "StatusCode": 200,
+  "Data": "Token atualizado com sucesso. Token atualizado: cGRmxJHeIwfnkhrtsIuqiztpdksw0u4sPlk_8-vY1j4",
+  "IsFailure": false
+}
+```
+
+Ou seja: você manda o **token definitivo atual** em `Token`, e a SIEG responde com um wrapper padrão (`IsSuccess`, `ErrorMessage`, etc.) e uma **mensagem em `Data`** dizendo que o token foi atualizado (parece que o valor é o mesmo, só renova a validade no backend).
+
+### Como isso deve aparecer no SDK (ideia)
+
+No SDK, a chamada ideal ficaria algo assim:
+
+```csharp
+Task<SiegRefreshResult> RefreshAsync(string accessToken, CancellationToken ct = default);
+```
+
+onde o `SiegRefreshResult` poderia ter algo como:
+
+- `bool IsSuccess`
+- `string? Message` (conteúdo de `Data`)
+- `string Token` (o próprio token que continua válido)
+
+Ou, se quisermos deixar ainda mais simples para o integrador:
+
+```csharp
+Task<string> RefreshTokenAsync(string accessToken, CancellationToken ct = default);
+```
+
+- Se `IsSuccess == true`: retorna o token (que pode ser o mesmo).
+- Se falhar: lança uma exceção (`SiegHttpException` / `SiegAuthException`) com `ErrorMessage`.
+
+Depois ajustamos o nome exato do método, mas o contrato já está bem claro.
+
+---
+
+Para fechar completamente o desenho do SDK, ainda faltam **só dois pontos**:
+
+1. **`revoke`**  
+   - Body JSON exato (suspeito que seja algo como `{ "Token": "<token>" }`).
+   - Resposta (segue o mesmo padrão de wrapper?).
+
+2. **Callback inicial da SIEG**  
+   - Quando você usa a URL `AuthorizeAccess.aspx?...`, ela redireciona para o seu `RedirectUri` com quais parâmetros?  
+     Exemplo:  
+     `https://seusistema.com/oauth/callback?AccessToken=...&State=123`  
+   - Eu quero o nome exato do parâmetro (`AccessToken`, `token`, etc.) para o SDK já ter helpers que pegam isso direto.
+
+Com isso eu monto a “API perfeita” do SDK (assinaturas) e te mostro como o emissor quase não precisa pensar em nada além de: “chame este método aqui e redirecione, depois neste callback chame este outro”.
+
+user:
+<user_query>
+O Revoke é identico ao Refresh , tando o header como o body , vou pegar agora o callback inicial
+</user_query>
+
+assistant:
+[Thinking] **Acknowledging user input**
+
+The user mentioned that "revoke" is similar to refreshing headers and body, and they'll send a callback. I think I should acknowledge this information and outline what my next steps will be. I want to keep my response concise and avoid being overly verbose since no tools are required for this. It’s interesting how similar terms can have different implications; I'll make sure to clarify my understanding!
+Perfeito, então temos:
+
+- **`/oauth/refresh`** e **`/oauth/revoke`**  
+  - Mesmo header: `X-Secret-Key`, `X-Client-Id`, `Content-Type: application/json`.  
+  - Mesmo body: `{ "Token": "<accessTokenAtual>" }`.  
+  - Mesmo padrão de resposta com `IsSuccess`, `ErrorMessage`, etc.
+
+Com isso já sei como modelar `RefreshTokenAsync` e `RevokeTokenAsync` no SDK.
+
+Assim que você me mandar o **callback inicial** (nome dos parâmetros que a SIEG envia, tipo `AccessToken`/`State`), eu fecho o desenho do fluxo completo e te proponho a API “quase automática” que o emissor vai usar (métodos, parâmetros e exemplos de uso).
+
+user:
+[Image]
+<image_files>
+The following images were provdied by the user and saved to the workspace for future use:
+1. C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0/assets/c__Users_fgaim_AppData_Roaming_Cursor_User_workspaceStorage_43c97cd6a42912a108423e070e9e069a_images_image-2f915982-39da-4d11-a691-7f12a8d83bb7.png
+
+These images can be copied for use in other locations.
+</image_files>
+<user_query>
+Seria isso aqui ?
+</user_query>
+
+assistant:
+[Thinking] **Considering User Feedback**
+
+I think I should ask if they agree with the proposed signatures. Guidelines suggest I shouldn't overwhelm them with too many questions, but a simple yes or no should be fine. They didn't specifically ask for API design right now, but since they plan to, I can propose something and see their reaction. I’ll respond in Portuguese, using headings to keep things organized. No tools needed for this response!
+### Sim, esse é o callback da SIEG
+
+Sim, é exatamente isso:
+
+- **Método**: `GET /oauth/callback`
+- **Query params**:
+  - `accessToken` → é o **token temporário** que você vai usar no `generate-token`
+  - `state` → o mesmo `state` que você mandou na URL de autorização
+
+Ou seja, o fluxo fica assim:
+
+1. Você monta a URL:  
+   `https://app.sieg.com/AuthorizeAccess.aspx?clientId=...&state=...&accessLevel=...`
+2. Usuário loga/autoriza na SIEG.
+3. SIEG chama seu `RedirectUri`, por exemplo:  
+   `/oauth/callback?accessToken=<TEMP>&state=<STATE>`
+4. No callback você:
+   - Lê `accessToken` (temporário) + `state`.
+   - Chama `POST https://api.sieg.com/api/v1/oauth/generate-token` com body:
+
+     ```json
+     {
+       "AccessToken": "<TEMP>",
+       "State": "<STATE>",
+       "RedirectUri": "<sua RedirectUri>"
+     }
+     ```
+
+   - A resposta te dá o **AccessToken definitivo** da SIEG.
+
+Depois, para **manter/encerrar** a sessão com a SIEG:
+
+- `POST /oauth/refresh` com:
+
+  ```json
+  { "Token": "<AccessToken definitivo>" }
+  ```
+
+- `POST /oauth/revoke` com:
+
+  ```json
+  { "Token": "<AccessToken definitivo>" }
+  ```
+
+Se você quiser, no próximo passo eu te proponho a **API do SDK** já alinhada com isso (ex.: `GetAuthorizationUrl`, `CompleteAuthorizationAsync` que recebe `accessToken`+`state` do callback e já chama `generate-token`, `RefreshAsync`, `RevokeAsync`), pensando em deixar o emissor com o mínimo de código possível.
+
+user:
+<user_query>
+Após chamar o endpoint generate-token , o token definitivo tem 30 dias de validade , há uma forma de colocarmos para que o refresh seja utilizado apenas quando otoken tiver perto de vencer ? o Revoke seria uma revogação do Token caso seja preciso , não entra num fluxo que vai ser utilizado sempre
+</user_query>
+
+assistant:
+[Thinking] **Designing token refresh logic**
+
+I'm thinking about the design pattern for refresh tokens. It makes sense to keep `expiresAt` and `skew` in mind, and only refreshing the token when `now` equals or exceeds `expiresAt - skew`. We should pick a skew value, perhaps something like 1 day or 12 hours, which should be configurable. Options for implementation in the SDK could include `AutoRefreshEnabled` and `AutoRefreshTolerance`. I also want to mention that we've implemented `IsExpired(tolerance)` in the SiegToken conceptually.
+### Sim, dá pra usar o `refresh` só perto de vencer
+
+A ideia é simples: **guardar a data de expiração** do token definitivo e colocar uma “janela de segurança” para decidir quando chamar o `refresh`.
+
+#### 1. Quando gerar o token definitivo (30 dias)
+
+Ao receber o token definitivo do `generate-token`, você faz:
+
+- `expiresAt = agora + 30 dias` (ou o valor que a SIEG documentar).
+- Salva no seu storage junto com o token (`empresaId` → `{ accessToken, expiresAt }`).
+
+#### 2. Antes de usar o token em qualquer chamada de API
+
+Sempre que for usar o token da SIEG:
+
+1. Busca o token para aquela empresa.
+2. Verifica se está **próximo de vencer**:
+   - Exemplo: `if (now >= expiresAt - tolerance)`  
+   - `tolerance` pode ser algo configurável, tipo **1 dia** ou **12 horas**.
+3. Se estiver perto de vencer:
+   - Chama `refresh` com o token atual.
+   - Atualiza `expiresAt` (mais 30 dias) e salva de novo.
+4. Se não estiver perto de vencer:
+   - Usa o token normalmente.
+
+Assim, o **`refresh` só roda quando precisa**, e você nunca corre o risco de deixar o token expirar no meio de uma chamada crítica.
+
+#### 3. `revoke` fica fora do fluxo normal
+
+Concordo 100% com você:
+
+- `revoke` é só para cenários de segurança ou desligar uma integração:
+  - empresa cancelou,
+  - suspeita de vazamento,
+  - administrador quer “deslogar” a integração.
+- Não entra no fluxo automático; é um **método manual** que o sistema chama quando o usuário/admin pedir.
+
+---
+
+Se quiser, no próximo passo eu desenho a interface do SDK exatamente assim:
+
+- métodos de **auto-refresh** com tolerância configurável (ex.: `TimeSpan AutoRefreshThreshold`),
+- e um método `RevokeAsync` só para uso pontual, fora do caminho feliz.
+
+user:
+<user_query>
+quero sim ! 
+</user_query>
+
+assistant:
+[Thinking] **Designing the SDK Interface**
+
+The user wants a design for the SDK interface that includes options for auto-refresh and revocation. We've already implemented some code, but the user is looking for alignment before we test anything. Earlier, they mentioned implementing the plan, and now they just need an interface sketch. I should propose a public API with a high-level code snippet that includes concise details without overdoing it. 
+
+The API should cover client configuration and provide a simplified usage pathway for integrators.
+**Designing Token Management for SDK**
+
+I'm considering how to simplify the token management in the SDK. I could provide a method like `GenerateState(SiegStateContext ctx)`, but that might add unnecessary complexity. Instead, I think focusing on auto-refresh is key and possibly creating two layers: 
+
+1. A low-level `ISiegAuthClient`.
+2. A higher-level `ISiegAuthSessionManager` that handles storage and token refresh logic.
+
+For instance, I can have a method like `GetValidAccessTokenAsync` to ensure the token is generated or refreshed when it’s close to expiry. But since token acquisition involves user browser interactions, I can manage the refresh instead while utilizing the `SiegToken` with an expiration check.
+**Proposing Token Management Design**
+
+I'm considering a design that includes a `TimeSpan AutoRefreshThreshold` and a method called `RefreshIfNeededAsync.` A great option could be a method like `GetOrRefreshTokenAsync` that takes an account key and an optional threshold.
+
+For the initial token, the caller still needs to provide a temporary token via a callback. After this callback, I could suggest the method `CompleteAuthorizationAsync`, which would generate the token, set its expiration to 30 days, and store it.
+
+For regular calls, they’d use `GetAccessTokenAsync`, which checks the stored token and refreshes it if it's near expiry. The integrator would primarily utilize just a couple of methods to simplify the process.
+**Designing the Revoke Method**
+
+I think a simple method for revoking a token would be `RevokeAsync`, which takes an account key and a cancellation token. This method would load the token using the account key, and if it exists, it would call the revoke endpoint and delete the token from the store. 
+
+It's important to focus on describing the high-level API without diving too deeply into code details. They’ve asked for a sketch of the interface, so I’ll suggest some method signatures and provide a short usage example. I’ll remember to incorporate the real endpoint specifics we've learned while keeping the documentation clear but not overly verbose.
+### Proposta de API “plug and play” com auto‑refresh
+
+Vou desenhar a **API pública ideal do SDK**, já considerando:
+
+- fluxo SIEG real (`AuthorizeAccess`, `generate-token`, `refresh`, `revoke`)
+- auto‑refresh perto de vencer (30 dias)
+- `revoke` só quando o sistema quiser encerrar a integração
+
+#### 1. Interface principal para o emissor
+
+```csharp
+public interface ISiegIntegrationClient
+{
+    // 1) Passo inicial: gerar URL para redirecionar o usuário à SIEG
+    string GetAuthorizationUrl(string state, string accessLevel = "read");
+
+    // 2) Callback: completar a autorização para uma empresa
+    Task CompleteAuthorizationAsync(
+        string accountKey,          // ex: CNPJ ou ID da empresa no emissor
+        string temporaryAccessToken,// Query param "accessToken" do callback
+        string state,               // Query param "state" do callback
+        CancellationToken ct = default);
+
+    // 3) Uso no dia a dia: obter um AccessToken válido (com auto-refresh)
+    Task<string> GetValidAccessTokenAsync(
+        string accountKey,
+        CancellationToken ct = default);
+
+    // 4) Encerrar integração para uma empresa (revoga token + limpa storage)
+    Task RevokeAsync(
+        string accountKey,
+        CancellationToken ct = default);
+}
+```
+
+#### 2. Comportamento interno (auto‑refresh)
+
+- **`CompleteAuthorizationAsync`**
+  - Chama `POST /oauth/generate-token` com body:
+
+    ```json
+    {
+      "AccessToken": "<temporaryAccessToken>",
+      "State": "<state>",
+      "RedirectUri": "<RedirectUri configurada>"
+    }
+    ```
+
+  - Lê `Data.AccessToken` da resposta.
+  - Cria e salva um registro tipo:
+
+    ```csharp
+    new SiegToken(
+        accessToken: data.AccessToken,
+        expiresAt: DateTimeOffset.UtcNow.AddDays(30) // validade de 30 dias
+    );
+    ```
+
+  - Salva no `ISiegTokenStore` com a chave `accountKey`.
+
+- **`GetValidAccessTokenAsync(accountKey)`**
+  1. Busca o `SiegToken` no `ISiegTokenStore`.
+  2. Se não existir → lança exceção clara (ex.: “empresa ainda não autenticada com SIEG”).
+  3. Se existir, verifica se está **perto de vencer**, usando um threshold configurável:
+
+     ```csharp
+     var threshold = options.AutoRefreshThreshold ?? TimeSpan.FromDays(1);
+
+     if (token.IsExpired(tolerance: threshold))
+     {
+         // chama /oauth/refresh
+     }
+     ```
+
+  4. Se estiver perto de vencer:
+     - Chama `POST /oauth/refresh` com:
+
+       ```json
+       { "Token": "<accessToken atual>" }
+       ```
+
+     - Se `IsSuccess == true`:
+       - Atualiza `ExpiresAt = DateTimeOffset.UtcNow.AddDays(30)` (renova mais 30 dias).
+       - Salva de novo no `ISiegTokenStore`.
+     - Retorna o `AccessToken`.
+  5. Se não estiver perto de vencer:
+     - Só retorna o `AccessToken` atual, sem chamar nada na SIEG.
+
+- **`RevokeAsync(accountKey)`**
+  1. Busca o token no `ISiegTokenStore`.
+  2. Se existir:
+     - Chama `POST /oauth/revoke` com:
+
+       ```json
+       { "Token": "<AccessToken atual>" }
+       ```
+
+     - Se for sucesso, apaga do `ISiegTokenStore`.
+
+#### 3. Configuração necessária
+
+```csharp
+public sealed class SiegIntegrationOptions
+{
+    public string ClientId { get; set; } = null!;
+    public string SecretKey { get; set; } = null!;
+    public Uri RedirectUri { get; set; } = null!;
+    public string BaseAuthorizeUrl { get; set; } =
+        "https://app.sieg.com/AuthorizeAccess.aspx";
+    public string BaseApiUrl { get; set; } =
+        "https://api.sieg.com/api/v1/oauth/";
+
+    // Ex.: 1 dia antes de vencer o token, já tenta dar refresh
+    public TimeSpan AutoRefreshThreshold { get; set; } = TimeSpan.FromDays(1);
+}
+```
+
+#### 4. Como o emissor usaria na prática
+
+- **Rota para iniciar fluxo SIEG**:
+
+```csharp
+public IActionResult ConectarSieg(string empresaId)
+{
+    // Você decide o formato do state
+    var state = Guid.NewGuid().ToString("N");
+
+    // (Opcional) salvar mapeamento state -> empresaId para conferência
+    _stateStore.Save(state, empresaId);
+
+    var url = _siegIntegrationClient.GetAuthorizationUrl(state, "read");
+    return Redirect(url);
+}
+```
+
+- **Callback `/oauth/callback`**:
+
+```csharp
+public async Task<IActionResult> SiegCallback(
+    [FromQuery] string accessToken,
+    [FromQuery] string state)
+{
+    // Recupera empresa da sua própria store, se quiser validar state
+    var empresaId = _stateStore.GetEmpresaId(state);
+
+    await _siegIntegrationClient.CompleteAuthorizationAsync(
+        accountKey: empresaId,
+        temporaryAccessToken: accessToken,
+        state: state);
+
+    return Ok("Integração SIEG concluída para a empresa " + empresaId);
+}
+```
+
+- **Em qualquer chamada futura à API SIEG**:
+
+```csharp
+public async Task<IActionResult> EnviarAlgoParaSieg(string empresaId)
+{
+    var token = await _siegIntegrationClient.GetValidAccessTokenAsync(empresaId);
+
+    // Usar esse token em Authorization: Bearer <token> para os endpoints fiscais da SIEG
+}
+```
+
+---
+
+Se você gostar dessa API (`ISiegIntegrationClient` + `SiegIntegrationOptions`), no próximo passo posso:
+
+- adaptar o código que já criamos para bater exatamente com esse contrato,  
+- ou escrever a implementação do zero seguindo esse desenho.
+
+user:
+<user_query>
+Gosto dessa API , pode criar , depois vamos seguir os passos para realizarmos testes como se eu fosse o emissor 
+</user_query>
+
+assistant:
+[Thinking] 
+[Tool call] Glob
+  target_directory: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0
+  glob_pattern: **/*
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegAuthClient.cs
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\ISiegAuthClient.cs
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegOAuthOptions.cs
+
+[Tool result] Glob
+
+[Tool result] Read
+
+[Tool result] Read
+
+[Tool result] Read
+
+assistant:
+[Thinking] **Refactoring client and options**
+
+I need to refactor to create a higher-level `ISiegIntegrationClient` while retaining the `SiegAuthClient` for low-level OAuth adaptation to actual SIEG endpoints. A new options class called `SiegIntegrationOptions` might be necessary, or I could merge it with `SiegOAuthOptions`. To minimize confusion, I’m thinking about evolving `SiegOAuthOptions` to include key properties like `SecretKey` and `BaseApiUrl`. Perhaps I'll transform it into `SiegIntegrationOptions` as the SDK is new, but it's a tough call since users may be attached to the existing name.
+**Adjusting SiegAuthClient**
+
+It looks like the current `SiegAuthClient` doesn't align with the actual request and response structures, so I need to make some adjustments. For `ExchangeTemporaryTokenAsync`, it should send JSON with properties formatted as `AccessToken`, `State`, and `RedirectUri` instead of using `temporary_token`. 
+
+Also, the response structure needs a change; the current `SiegTokenResponse` isn't matching the expected wrapper format. I need to incorporate the response details like `IsSuccess`, `Data`, and `ErrorMessage` while noting that we don’t need an expiry field since it’s contractually known to be 30 days.
+**Reevaluating SiegAuthClient structure**
+
+I'm considering the role of the `SiegAuthClient` now that we're creating a higher-level `ISiegIntegrationClient`. It may serve as a low-level client for direct endpoint calls, but since the focus is on the high-level API, perfection isn't necessary for the low-level part used only by `ISiegIntegrationClient`. 
+
+Instead, I could keep `ISiegAuthClient` internal and create `SiegIntegrationClient`, which implements a high-level interface and performs HTTP requests directly. I should retain existing files as internal components, adjust them for SIEG specifics, and add any new parameters needed for `ExchangeTemporaryTokenAsync` for future compatibility.
+**Designing client interfaces**
+
+The user hasn't started using the code yet, so I’m considering how to structure `ISiegAuthClient`. I could keep it generic but introduce new methods or overloads for `ExchangeTemporaryTokenAsync` to include `string tempToken`, `string state`, and a `Uri redirectUri`. 
+
+However, to keep things clean, I might create a high-level integration that bypasses this interface, using `HttpClient` directly. I want to ensure separation of concerns: `SiegAuthClient` manages HTTP details while `SiegIntegrationClient` focuses on state and auto-refresh. Modifications might include updating `SiegOAuthOptions` to add `SecretKey`, rename the `BaseApiUrl`, and ensure a non-null `RedirectUri`.
+**Modifying ISiegAuthClient structure**
+
+I'm changing the `ISiegAuthClient` interface to better suit the needs of our application. I'll keep `BuildAuthorizationUrl(string state, string? accessLevel)` as is, but modify the `ExchangeTemporaryTokenAsync` method to include `state` and `redirectUri`, using the configuration for `RedirectUri`.
+
+With the API returning a static token string, we can streamline `RefreshTokenAsync` to simply handle the HTTP call without generating a new token. I’m also leaning towards introducing a new interface, `ISiegIntegrationClient`, to use direct HTTP communication for a more general approach while repurposing existing components where useful.
+**Implementing the integration client**
+
+I'm working on the `GetValidAccessTokenAsync` method to fetch the access token for a specific account. If the token is found and not expired, I return it. If it's expired, I'll refresh the token and save the new version to the store.
+
+For `RefreshTokenInternalAsync` and `RevokeAsync`, I'll set up calls to handle those changes. Instead of reusing the existing `SiegAuthClient`, which has somewhat duplicative functionality, I think it’s better to create a new class for simplicity. I'll also enhance `SiegOAuthOptions` by adding `SecretKey`, `BaseApiUrl`, and `AutoRefreshThreshold` to streamline the process.
+[Tool call] ApplyPatch*** Begin Patch
+*** Update File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegOAuthOptions.cs
+@@
+-/// <summary>
+-/// Opções de configuração para autenticação OAuth 2.0 com a SIEG.
+-/// </summary>
+-public sealed class SiegOAuthOptions
+-{
+-    /// <summary>
+-    /// ClientId fornecido pela SIEG para identificar o sistema externo.
+-    /// </summary>
+-    public string ClientId { get; set; } = string.Empty;
+-
+-    /// <summary>
+-    /// URL de callback configurada na SIEG (RedirectUri).
+-    /// </summary>
+-    public Uri? RedirectUri { get; set; }
+-
+-    /// <summary>
+-    /// URL base para a tela de autorização OAuth 2.0.
+-    /// Normalmente: https://app.sieg.com/AuthorizeAccess.aspx
+-    /// </summary>
+-    public Uri BaseAuthorizeUrl { get; set; } =
+-        new("https://app.sieg.com/AuthorizeAccess.aspx");
+-
+-    /// <summary>
+-    /// URL base para os endpoints OAuth 2.0 da API (generate-token, refresh, revoke).
+-    /// A documentação da SIEG deve informar o valor correto; mantenha configurável.
+-    /// </summary>
+-    public Uri? BaseApiUrl { get; set; }
+-
+-    /// <summary>
+-    /// Nível de acesso padrão solicitado na URL de autenticação
+-    /// (read, write ou fullAccess). Pode ser sobrescrito por chamada.
+-    /// </summary>
+-    public string? DefaultAccessLevel { get; set; }
+-}
++/// <summary>
++/// Opções de configuração para autenticação OAuth 2.0 com a SIEG.
++/// </summary>
++public sealed class SiegOAuthOptions
++{
++    /// <summary>
++    /// ClientId fornecido pela SIEG para identificar o sistema externo.
++    /// Utilizado tanto na URL de autorização quanto nos headers das chamadas HTTP.
++    /// </summary>
++    public string ClientId { get; set; } = string.Empty;
++
++    /// <summary>
++    /// Secret Key fornecida pela SIEG.
++    /// Enviada no header X-Secret-Key para os endpoints generate-token, refresh e revoke.
++    /// </summary>
++    public string SecretKey { get; set; } = string.Empty;
++
++    /// <summary>
++    /// URL de callback configurada na SIEG (RedirectUri).
++    /// Ex.: https://seusistema.com/oauth/callback
++    /// </summary>
++    public Uri? RedirectUri { get; set; }
++
++    /// <summary>
++    /// URL base para a tela de autorização OAuth 2.0.
++    /// Normalmente: https://app.sieg.com/AuthorizeAccess.aspx
++    /// </summary>
++    public Uri BaseAuthorizeUrl { get; set; } =
++        new("https://app.sieg.com/AuthorizeAccess.aspx");
++
++    /// <summary>
++    /// URL base para os endpoints OAuth 2.0 da API (generate-token, refresh, revoke).
++    /// Padrão: https://api.sieg.com/api/v1/oauth/
++    /// </summary>
++    public Uri BaseApiUrl { get; set; } =
++        new("https://api.sieg.com/api/v1/oauth/");
++
++    /// <summary>
++    /// Nível de acesso padrão solicitado na URL de autenticação
++    /// (read, write ou fullAccess). Pode ser sobrescrito por chamada.
++    /// </summary>
++    public string? DefaultAccessLevel { get; set; }
++
++    /// <summary>
++    /// Janela de antecedência para auto-refresh do token.
++    /// Quando estiver a menos que esse tempo de expirar, o SDK tentará um refresh.
++    /// </summary>
++    public TimeSpan AutoRefreshThreshold { get; set; } = TimeSpan.FromDays(1);
++}
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\ISiegIntegrationClient.cs
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// API de alto nível para integrar sistemas emissores com a SIEG.
++/// Encapsula todo o fluxo OAuth 2.0 (AuthorizeAccess, generate-token,
++/// auto-refresh e revoke) de forma simples.
++/// </summary>
++public interface ISiegIntegrationClient
++{
++    /// <summary>
++    /// Gera a URL de autorização da SIEG para redirecionar o usuário.
++    /// </summary>
++    /// <param name="state">Identificador interno do integrador (empresa, usuário, etc.).</param>
++    /// <param name="accessLevel">
++    /// Nível de acesso solicitado (read, write, fullAccess).
++    /// Se omitido, utiliza o valor padrão de <see cref="SiegOAuthOptions.DefaultAccessLevel"/>.
++    /// </param>
++    string GetAuthorizationUrl(string state, string? accessLevel = null);
++
++    /// <summary>
++    /// Conclui o fluxo de autorização utilizando o token temporário recebido no callback
++    /// e persiste o token definitivo da SIEG para a conta informada.
++    /// </summary>
++    /// <param name="accountKey">Identificador da conta no sistema emissor (ex.: CNPJ, ID interno).</param>
++    /// <param name="temporaryAccessToken">Valor do parâmetro "accessToken" enviado pela SIEG no callback.</param>
++    /// <param name="state">Valor do parâmetro "state" enviado pela SIEG no callback.</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task CompleteAuthorizationAsync(
++        string accountKey,
++        string temporaryAccessToken,
++        string state,
++        CancellationToken ct = default);
++
++    /// <summary>
++    /// Obtém um access token SIEG válido para a conta informada.
++    /// Se o token estiver próximo de expirar, o cliente tenta realizar um refresh automático.
++    /// </summary>
++    /// <param name="accountKey">Identificador da conta no sistema emissor.</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    /// <returns>Access token atual para uso nas APIs da SIEG.</returns>
++    Task<string> GetValidAccessTokenAsync(
++        string accountKey,
++        CancellationToken ct = default);
++
++    /// <summary>
++    /// Revoga o token associado à conta e remove-o do armazenamento local.
++    /// Deve ser utilizado quando o usuário/admin desejar encerrar a integração.
++    /// </summary>
++    /// <param name="accountKey">Identificador da conta no sistema emissor.</param>
++    /// <param name="ct">Token de cancelamento opcional.</param>
++    Task RevokeAsync(
++        string accountKey,
++        CancellationToken ct = default);
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\SiegIntegrationClient.cs
++using System;
++using System.Net.Http;
++using System.Text;
++using System.Text.Json;
++using System.Threading;
++using System.Threading.Tasks;
++using Sieg.Auth.Exceptions;
++
++namespace Sieg.Auth;
++
++/// <summary>
++/// Implementação de alto nível de <see cref="ISiegIntegrationClient"/>,
++/// que encapsula todo o fluxo OAuth 2.0 com a SIEG, incluindo auto-refresh.
++/// </summary>
++public sealed class SiegIntegrationClient : ISiegIntegrationClient
++{
++    private static readonly JsonSerializerOptions JsonOptions = new()
++    {
++        PropertyNamingPolicy = null, // Mantém PascalCase conforme a API da SIEG
++        PropertyNameCaseInsensitive = true
++    };
++
++    private readonly HttpClient _httpClient;
++    private readonly SiegOAuthOptions _options;
++    private readonly ISiegTokenStore _tokenStore;
++    private readonly ISiegAuthLogger? _logger;
++
++    public SiegIntegrationClient(
++        HttpClient httpClient,
++        SiegOAuthOptions options,
++        ISiegTokenStore tokenStore,
++        ISiegAuthLogger? logger = null)
++    {
++        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
++        _options = options ?? throw new ArgumentNullException(nameof(options));
++        _tokenStore = tokenStore ?? throw new ArgumentNullException(nameof(tokenStore));
++        _logger = logger;
++
++        if (string.IsNullOrWhiteSpace(_options.ClientId))
++        {
++            throw new ArgumentException("ClientId deve ser configurado em SiegOAuthOptions.", nameof(options));
++        }
++
++        if (string.IsNullOrWhiteSpace(_options.SecretKey))
++        {
++            throw new ArgumentException("SecretKey deve ser configurada em SiegOAuthOptions.", nameof(options));
++        }
++
++        if (_options.RedirectUri is null)
++        {
++            throw new ArgumentException("RedirectUri deve ser configurada em SiegOAuthOptions.", nameof(options));
++        }
++    }
++
++    /// <inheritdoc />
++    public string GetAuthorizationUrl(string state, string? accessLevel = null)
++    {
++        if (string.IsNullOrWhiteSpace(state))
++        {
++            throw new ArgumentException("state não pode ser vazio.", nameof(state));
++        }
++
++        var level = accessLevel ?? _options.DefaultAccessLevel ?? "read";
++
++        _logger?.LogDebug(
++            $"Montando URL de autorização SIEG com state='{state}' e accessLevel='{level}'.");
++
++        var builder = new UriBuilder(_options.BaseAuthorizeUrl);
++        var query = new StringBuilder();
++
++        AppendQueryParam(query, "clientId", _options.ClientId);
++        AppendQueryParam(query, "state", state);
++        AppendQueryParam(query, "accessLevel", level);
++
++        builder.Query = query.ToString().TrimStart('&');
++
++        return builder.Uri.ToString();
++    }
++
++    /// <inheritdoc />
++    public async Task CompleteAuthorizationAsync(
++        string accountKey,
++        string temporaryAccessToken,
++        string state,
++        CancellationToken ct = default)
++    {
++        if (string.IsNullOrWhiteSpace(accountKey))
++        {
++            throw new ArgumentException("accountKey não pode ser vazio.", nameof(accountKey));
++        }
++
++        if (string.IsNullOrWhiteSpace(temporaryAccessToken))
++        {
++            throw new ArgumentException("temporaryAccessToken não pode ser vazio.", nameof(temporaryAccessToken));
++        }
++
++        if (string.IsNullOrWhiteSpace(state))
++        {
++            throw new ArgumentException("state não pode ser vazio.", nameof(state));
++        }
++
++        _logger?.LogInformation($"Concluindo autorização SIEG para conta '{accountKey}'.");
++
++        var endpoint = new Uri(_options.BaseApiUrl, "generate-token");
++
++        var payload = new GenerateTokenRequest
++        {
++            AccessToken = temporaryAccessToken,
++            State = state,
++            RedirectUri = _options.RedirectUri!.ToString()
++        };
++
++        var apiResponse = await PostJsonAsync<ApiResponse<GenerateTokenData>>(
++            endpoint,
++            payload,
++            ct).ConfigureAwait(false);
++
++        if (!apiResponse.IsSuccess || apiResponse.Data is null ||
++            string.IsNullOrWhiteSpace(apiResponse.Data.AccessToken))
++        {
++            throw new SiegAuthException(
++                $"Falha ao gerar token definitivo na SIEG. " +
++                $"StatusCode={apiResponse.StatusCode}, Error='{apiResponse.ErrorMessage}'.");
++        }
++
++        // Token definitivo com validade de 30 dias a partir de agora.
++        var token = new SiegToken(
++            apiResponse.Data.AccessToken,
++            DateTimeOffset.UtcNow.AddDays(30));
++
++        await _tokenStore.SaveTokenAsync(accountKey, token, ct).ConfigureAwait(false);
++
++        _logger?.LogInformation($"Autorização SIEG concluída e token salvo para conta '{accountKey}'.");
++    }
++
++    /// <inheritdoc />
++    public async Task<string> GetValidAccessTokenAsync(
++        string accountKey,
++        CancellationToken ct = default)
++    {
++        if (string.IsNullOrWhiteSpace(accountKey))
++        {
++            throw new ArgumentException("accountKey não pode ser vazio.", nameof(accountKey));
++        }
++
++        var token = await _tokenStore.GetTokenAsync(accountKey, ct).ConfigureAwait(false);
++
++        if (token is null)
++        {
++            throw new SiegAuthException(
++                $"Nenhum token SIEG encontrado para a conta '{accountKey}'. " +
++                "Certifique-se de ter concluído o fluxo de autorização.");
++        }
++
++        // Se estiver próximo de expirar, tenta auto-refresh.
++        if (token.IsExpired(tolerance: _options.AutoRefreshThreshold))
++        {
++            _logger?.LogInformation(
++                $"Token SIEG para conta '{accountKey}' próximo de expirar. Iniciando auto-refresh.");
++
++            await RefreshTokenInternalAsync(token.AccessToken, ct).ConfigureAwait(false);
++
++            // A SIEG mantém o mesmo valor de token e apenas renova a validade no backend.
++            var renewed = new SiegToken(
++                token.AccessToken,
++                DateTimeOffset.UtcNow.AddDays(30));
++
++            await _tokenStore.SaveTokenAsync(accountKey, renewed, ct).ConfigureAwait(false);
++
++            token = renewed;
++
++            _logger?.LogInformation(
++                $"Auto-refresh concluído para conta '{accountKey}'. Nova expiração: {renewed.ExpiresAt:O}.");
++        }
++
++        return token.AccessToken;
++    }
++
++    /// <inheritdoc />
++    public async Task RevokeAsync(
++        string accountKey,
++        CancellationToken ct = default)
++    {
++        if (string.IsNullOrWhiteSpace(accountKey))
++        {
++            throw new ArgumentException("accountKey não pode ser vazio.", nameof(accountKey));
++        }
++
++        var token = await _tokenStore.GetTokenAsync(accountKey, ct).ConfigureAwait(false);
++        if (token is null)
++        {
++            // Nada para revogar.
++            _logger?.LogWarning(
++                $"Nenhum token SIEG encontrado para a conta '{accountKey}' ao tentar revogar.");
++            return;
++        }
++
++        _logger?.LogInformation($"Revogando token SIEG para conta '{accountKey}'.");
++
++        var endpoint = new Uri(_options.BaseApiUrl, "revoke");
++        var payload = new TokenRequest { Token = token.AccessToken };
++
++        var apiResponse = await PostJsonAsync<ApiResponse<string?>>(
++            endpoint,
++            payload,
++            ct).ConfigureAwait(false);
++
++        if (!apiResponse.IsSuccess)
++        {
++            throw new SiegAuthException(
++                $"Falha ao revogar token na SIEG para conta '{accountKey}'. " +
++                $"StatusCode={apiResponse.StatusCode}, Error='{apiResponse.ErrorMessage}'.");
++        }
++
++        await _tokenStore.DeleteTokenAsync(accountKey, ct).ConfigureAwait(false);
++
++        _logger?.LogInformation($"Token SIEG revogado e removido do armazenamento para conta '{accountKey}'.");
++    }
++
++    #region HTTP helpers
++
++    private async Task<TResponse> PostJsonAsync<TResponse>(
++        Uri uri,
++        object payload,
++        CancellationToken ct)
++    {
++        using var request = new HttpRequestMessage(HttpMethod.Post, uri)
++        {
++            Content = new StringContent(
++                JsonSerializer.Serialize(payload, JsonOptions),
++                Encoding.UTF8,
++                "application/json")
++        };
++
++        // Headers exigidos pela SIEG.
++        request.Headers.Add("X-Client-Id", _options.ClientId);
++        request.Headers.Add("X-Secret-Key", _options.SecretKey);
++
++        _logger?.LogDebug($"Enviando requisição POST para '{uri}'.");
++
++        using var response = await _httpClient.SendAsync(request, ct).ConfigureAwait(false);
++
++        var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
++
++        if (!response.IsSuccessStatusCode)
++        {
++            _logger?.LogError(
++                $"Chamada HTTP para '{uri}' falhou com código {(int)response.StatusCode} ({response.StatusCode}). " +
++                $"Corpo: {content}",
++                null);
++
++            throw new SiegHttpException(
++                response.StatusCode,
++                content,
++                $"Chamada HTTP para '{uri}' retornou código {(int)response.StatusCode} ({response.StatusCode}).");
++        }
++
++        try
++        {
++            var result = JsonSerializer.Deserialize<TResponse>(content, JsonOptions);
++            if (result == null)
++            {
++                throw new SiegAuthException(
++                    $"Não foi possível desserializar a resposta de '{uri}' para o tipo '{typeof(TResponse).Name}'.");
++            }
++
++            _logger?.LogDebug(
++                $"Resposta HTTP de '{uri}' desserializada com sucesso para '{typeof(TResponse).Name}'.");
++
++            return result;
++        }
++        catch (JsonException ex)
++        {
++            _logger?.LogError($"Erro ao desserializar a resposta JSON de '{uri}'.", ex);
++
++            throw new SiegAuthException(
++                $"Erro ao desserializar a resposta JSON de '{uri}'.",
++                ex);
++        }
++    }
++
++    private async Task RefreshTokenInternalAsync(
++        string accessToken,
++        CancellationToken ct)
++    {
++        var endpoint = new Uri(_options.BaseApiUrl, "refresh");
++        var payload = new TokenRequest { Token = accessToken };
++
++        var apiResponse = await PostJsonAsync<ApiResponse<string?>>(
++            endpoint,
++            payload,
++            ct).ConfigureAwait(false);
++
++        if (!apiResponse.IsSuccess)
++        {
++            throw new SiegAuthException(
++                $"Falha ao atualizar token na SIEG. " +
++                $"StatusCode={apiResponse.StatusCode}, Error='{apiResponse.ErrorMessage}'.");
++        }
++    }
++
++    private static void AppendQueryParam(StringBuilder builder, string name, string value)
++    {
++        if (builder.Length > 0)
++        {
++            builder.Append('&');
++        }
++
++        builder
++            .Append(Uri.EscapeDataString(name))
++            .Append('=')
++            .Append(Uri.EscapeDataString(value));
++    }
++
++    #endregion
++
++    #region DTOs
++
++    private sealed class GenerateTokenRequest
++    {
++        public string AccessToken { get; set; } = string.Empty;
++        public string State { get; set; } = string.Empty;
++        public string RedirectUri { get; set; } = string.Empty;
++    }
++
++    private sealed class TokenRequest
++    {
++        public string Token { get; set; } = string.Empty;
++    }
++
++    private sealed class ApiResponse<TData>
++    {
++        public bool IsSuccess { get; set; }
++        public string? ErrorMessage { get; set; }
++        public int StatusCode { get; set; }
++        public TData? Data { get; set; }
++        public bool IsFailure { get; set; }
++    }
++
++    private sealed class GenerateTokenData
++    {
++        public int AccessLevel { get; set; }
++        public string AccessToken { get; set; } = string.Empty;
++        public string TokenType { get; set; } = string.Empty;
++    }
++
++    #endregion
++}
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth"]
+
+[Tool result] ReadLints
+
+assistant:
+Já criei a interface `ISiegIntegrationClient` e a implementação `SiegIntegrationClient` com auto-refresh e revoke, usando exatamente os endpoints e formatos que você mostrou. Vou só ajustar o README para mostrar esse fluxo de uso “como emissor” e te explico como usar passo a passo.
+[Tool call] ApplyPatch*** Begin Patch
+*** Update File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\README.md
+@@
+-# Sieg.Auth SDK (OAuth 2.0 SIEG)
+-
+-Biblioteca .NET para encapsular o fluxo de autenticação OAuth 2.0 da SIEG,
+-pensada para sistemas emissores de nota fiscal.
+-
+-## Estrutura
+-
+-- `src/Sieg.Auth` — biblioteca principal com:
+-  - `SiegOAuthOptions` — configuração (ClientId, URLs, accessLevel padrão).
+-  - `SiegToken` e `SiegTemporaryToken` — modelos de token definitivo e temporário.
+-  - `ISiegAuthClient` / `SiegAuthClient` — cliente de autenticação OAuth 2.0.
+-  - `ISiegTokenStore` / `InMemorySiegTokenStore` — abstração de armazenamento de tokens.
+-  - Exceções em `Exceptions/` (`SiegAuthException`, `SiegHttpException`, `SiegTokenExpiredException`).
+-
+-## Uso básico
+-
+-```csharp
+-using Sieg.Auth;
+-
+-var options = new SiegOAuthOptions
+-{
+-    ClientId = "seu-client-id",
+-    RedirectUri = new Uri("https://seu-sistema.com/sieg/callback"),
+-    BaseApiUrl = new Uri("https://integracoes.sieg.com/sistema-externo/oauth2/"),
+-    DefaultAccessLevel = "read"
+-};
+-
+-var httpClient = new HttpClient();
+-var tokenStore = new InMemorySiegTokenStore();
+-var authClient = new SiegAuthClient(httpClient, options, tokenStore);
+-
+-// 1) Redirecionar usuário para autenticação SIEG
+-var state = Guid.NewGuid().ToString("N");
+-var authUrl = authClient.BuildAuthorizationUrl(state);
+-// -> redirecionar para authUrl
+-
+-// 2) Após o callback da SIEG, você recebe um token temporário (por querystring)
+-// string temporaryToken = ...;
+-// var finalToken = await authClient.ExchangeTemporaryTokenAsync(temporaryToken);
+-// await tokenStore.SaveTokenAsync("minha-conta", finalToken);
+-```
+-
+-> Importante: Os caminhos exatos de `BaseApiUrl` e o formato JSON dos endpoints
+-> (`generate-token`, `refresh`, `revoke`) devem seguir a documentação oficial da SIEG
+-> em `https://integracoes.sieg.com/sistema-externo/docs/api-key-2` e seções relacionadas.
++# Sieg.Auth SDK (OAuth 2.0 SIEG)
++
++Biblioteca .NET para encapsular o fluxo de autenticação OAuth 2.0 da SIEG,
++pensada para sistemas emissores de nota fiscal, com auto-refresh de token.
++
++## Estrutura
++
++- `src/Sieg.Auth` — biblioteca principal com:
++  - `SiegOAuthOptions` — configuração (ClientId, SecretKey, RedirectUri, URLs, accessLevel padrão, threshold de auto-refresh).
++  - `SiegToken` — modelo de token definitivo + expiração.
++  - `ISiegIntegrationClient` / `SiegIntegrationClient` — API de alto nível para o emissor.
++  - `ISiegTokenStore` / `InMemorySiegTokenStore` — abstração de armazenamento de tokens por conta.
++  - Exceções em `Exceptions/` (`SiegAuthException`, `SiegHttpException`, `SiegTokenExpiredException`).
++
++## Fluxo como sistema emissor
++
++### 1. Configuração
++
++```csharp
++using Sieg.Auth;
++
++var options = new SiegOAuthOptions
++{
++    ClientId = "seu-client-id",
++    SecretKey = "sua-secret-key",
++    RedirectUri = new Uri("https://seu-sistema.com/oauth/callback"),
++    DefaultAccessLevel = "read"
++    // BaseAuthorizeUrl e BaseApiUrl já vêm com os padrões oficiais da SIEG
++};
++
++var httpClient = new HttpClient();
++var tokenStore = new InMemorySiegTokenStore();
++var logger = (ISiegAuthLogger?)null; // opcional
++
++var sieg = new SiegIntegrationClient(httpClient, options, tokenStore, logger);
++```
++
++### 2. Rota para iniciar conexão com a SIEG
++
++```csharp
++public IActionResult ConectarSieg(string empresaId)
++{
++    // Você define como gerar/armazenar o state
++    var state = Guid.NewGuid().ToString("N");
++    _stateStore.Save(state, empresaId);
++
++    var url = sieg.GetAuthorizationUrl(state, "read");
++    return Redirect(url);
++}
++```
++
++### 3. Callback configurado na SIEG (`RedirectUri`)
++
++A SIEG chamará algo como:
++
++```text
++GET /oauth/callback?accessToken=...&state=...
++```
++
++No seu código:
++
++```csharp
++public async Task<IActionResult> SiegCallback(
++    [FromQuery] string accessToken,
++    [FromQuery] string state)
++{
++    var empresaId = _stateStore.GetEmpresaId(state);
++
++    await sieg.CompleteAuthorizationAsync(
++        accountKey: empresaId,
++        temporaryAccessToken: accessToken,
++        state: state);
++
++    return Ok("Integração SIEG concluída para a empresa " + empresaId);
++}
++```
++
++### 4. Uso diário: obter token válido (com auto-refresh)
++
++```csharp
++public async Task<IActionResult> AlgumaAcaoQueChamaSieg(string empresaId)
++{
++    // O SDK renova o token automaticamente se estiver próximo de expirar
++    var accessToken = await sieg.GetValidAccessTokenAsync(empresaId);
++
++    // Use accessToken em Authorization: Bearer <accessToken>
++    // nas chamadas às APIs fiscais da SIEG
++
++    return Ok();
++}
++```
++
++### 5. Encerrar integração (revogar token)
++
++```csharp
++public async Task<IActionResult> DesconectarSieg(string empresaId)
++{
++    await sieg.RevokeAsync(empresaId);
++    return Ok();
++}
++```
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth"]
+
+[Tool result] ReadLints
+
+assistant:
+### O que eu fiz agora
+
+- **Criei a API de alto nível** que você gostou:
+  - `ISiegIntegrationClient` com:
+    - `GetAuthorizationUrl(state, accessLevel)`
+    - `CompleteAuthorizationAsync(accountKey, temporaryAccessToken, state, ct)`
+    - `GetValidAccessTokenAsync(accountKey, ct)` (com auto‑refresh)
+    - `RevokeAsync(accountKey, ct)`
+  - Implementação: `SiegIntegrationClient`, usando:
+    - `SiegOAuthOptions` (agora com `ClientId`, `SecretKey`, `RedirectUri`, `BaseAuthorizeUrl`, `BaseApiUrl`, `AutoRefreshThreshold`)
+    - `ISiegTokenStore` (por exemplo `InMemorySiegTokenStore`)
+    - `HttpClient` para:
+      - `POST /oauth/generate-token` com body `{ AccessToken, State, RedirectUri }`
+      - `POST /oauth/refresh` e `/oauth/revoke` com body `{ Token }`
+      - parse do wrapper `IsSuccess`, `ErrorMessage`, `StatusCode`, `Data`
+    - `SiegToken` guarda o token definitivo e `ExpiresAt = agora + 30 dias`.
+    - `GetValidAccessTokenAsync` faz auto‑refresh quando o token está a menos de `AutoRefreshThreshold` (padrão 1 dia) de expirar.
+- **Atualizei o README** para mostrar exatamente o fluxo “como se você fosse o emissor”:
+  - rota `ConectarSieg` que gera o `state` e usa `GetAuthorizationUrl`;
+  - callback `/oauth/callback` lendo `accessToken` e `state` e chamando `CompleteAuthorizationAsync`;
+  - exemplo de uso diário de `GetValidAccessTokenAsync`;
+  - exemplo de `DesconectarSieg` com `RevokeAsync`.
+
+Quando você quiser, no próximo passo podemos simular juntos o uso como emissor (ex.: montar um mini projeto console ou ASP.NET Core) usando exatamente esses métodos, seguindo os testes que você já faz hoje no Postman.
+
+user:
+<user_query>
+Em qual pasta ta esse codigo que voce criou consegue abrir ele aqui ?
+</user_query>
+
+assistant:
+[Thinking] **Finding code path**
+
+The user is asking where the code is located and wants me to open it "aqui." I need to provide a clear and concise answer while showing the relevant file path and possibly code snippets.
+
+I already know the paths from Glob, so I’ll mention the path `src/Sieg.Auth`. I should also highlight important files with code references, keeping the format as CODE REFERENCES. 
+
+Since I need to be concise, I'll focus on just the key parts and avoid being overly verbose.
+### Onde está o código do SDK
+
+Tudo que criamos está dentro da pasta:
+
+- `src/Sieg.Auth`
+
+Arquivos principais:
+
+- `Sieg.Auth.csproj`
+- `SiegOAuthOptions.cs`
+- `SiegToken.cs`
+- `ISiegTokenStore.cs` / `InMemorySiegTokenStore.cs`
+- `ISiegIntegrationClient.cs`
+- `SiegIntegrationClient.cs`
+- `ISiegAuthLogger.cs`
+- Pasta `Exceptions/` com as exceções.
+
+Por exemplo, a interface de alto nível está em:
+
+```1:40:src/Sieg.Auth/ISiegIntegrationClient.cs
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Sieg.Auth;
+
+public interface ISiegIntegrationClient
+{
+    string GetAuthorizationUrl(string state, string? accessLevel = null);
+
+    Task CompleteAuthorizationAsync(
+        string accountKey,
+        string temporaryAccessToken,
+        string state,
+        CancellationToken ct = default);
+
+    Task<string> GetValidAccessTokenAsync(
+        string accountKey,
+        CancellationToken ct = default);
+
+    Task RevokeAsync(
+        string accountKey,
+        CancellationToken ct = default);
+}
+```
+
+E a implementação está em:
+
+```1:80:src/Sieg.Auth/SiegIntegrationClient.cs
+namespace Sieg.Auth;
+
+public sealed class SiegIntegrationClient : ISiegIntegrationClient
+{
+    // construtor recebe HttpClient, SiegOAuthOptions, ISiegTokenStore, ISiegAuthLogger?
+    // GetAuthorizationUrl, CompleteAuthorizationAsync, GetValidAccessTokenAsync, RevokeAsync
+    // chamando generate-token, refresh, revoke e fazendo auto-refresh
+}
+```
+
+Se você quiser, posso te mostrar algum arquivo específico completo (por exemplo só o `SiegIntegrationClient.cs`) para você revisar.
+
+user:
+<user_query>
+Eu quero abrir o codigo pra ver , não estou localizando na minha maquina em qual pasta ele está ?
+</user_query>
+
+assistant:
+[Thinking] 
+### Onde o código está na sua máquina
+
+O código que eu criei está **dentro da pasta de workspace do Cursor**, não na pasta original `Oauth 2.0` da sua Área de Trabalho.
+
+O caminho completo é:
+
+- `C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth`
+
+Lá dentro você vai ver, por exemplo:
+
+- `Sieg.Auth.csproj`
+- `SiegIntegrationClient.cs`
+- `ISiegIntegrationClient.cs`
+- `SiegOAuthOptions.cs`
+- etc.
+
+### Como abrir
+
+- No **Explorador do Windows**:
+  1. Vá em `C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\`.
+  2. Abra a pasta `Sieg.Auth` e você verá todos os `.cs`.
+
+- No **Cursor/VS Code**:
+  - Use `File > Open Folder...` e escolha:  
+    `C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0`  
+    depois navegue até `src/Sieg.Auth`.
+
+user:
+<user_query>
+Certo localizei , minha duvida agora é oque eu preciso fazer pra disponibilizar isso para os emissores que quiserem utilizar ?
+</user_query>
+
+assistant:
+[Thinking] **Distributing SDK Steps**
+
+The user is asking about distributing an SDK to other emitter systems, likely focusing on creating a NuGet library. I need to provide a concise answer with clear steps. First, I’ll outline creating a solution and then packaging it as a NuGet. Next, I need to mention publishing to nuget.org or a private feed, along with versioning and preparing documentation and samples. It might also be helpful to suggest setting up a repository on GitHub.
+### Caminho mais simples para disponibilizar pros emissores
+
+Vou focar no fluxo “profissional” em .NET: **empacotar como NuGet**.
+
+### 1. Transformar o projeto em um pacote NuGet
+
+No `Sieg.Auth.csproj`, você (depois) adiciona metadados de pacote, por exemplo:
+
+```xml
+<PropertyGroup>
+  <TargetFramework>net8.0</TargetFramework>
+  <ImplicitUsings>enable</ImplicitUsings>
+  <Nullable>enable</Nullable>
+
+  <PackageId>Sieg.Auth</PackageId>
+  <Version>1.0.0</Version>
+  <Authors>SeuNomeOuEmpresa</Authors>
+  <Company>SeuNomeOuEmpresa</Company>
+  <Description>SDK de integração OAuth 2.0 com a SIEG para emissores.</Description>
+</PropertyGroup>
+```
+
+Para gerar o `.nupkg`:
+
+```bash
+dotnet pack src/Sieg.Auth/Sieg.Auth.csproj -c Release
+```
+
+Isso vai gerar um arquivo tipo:
+
+- `src/Sieg.Auth/bin/Release/Sieg.Auth.1.0.0.nupkg`
+
+### 2. Publicar o pacote
+
+Você tem duas opções:
+
+- **NuGet público (nuget.org)** – qualquer emissor .NET consegue instalar com:
+  ```bash
+  dotnet add package Sieg.Auth
+  ```
+  Passos:
+  - Criar conta em `nuget.org`.
+  - Gerar uma **API Key**.
+  - Publicar:
+    ```bash
+    dotnet nuget push src/Sieg.Auth/bin/Release/Sieg.Auth.1.0.0.nupkg \
+      -k SUA_API_KEY \
+      -s https://api.nuget.org/v3/index.json
+    ```
+
+- **Feed privado** (Azure Artifacts, GitHub Packages, etc.), se você quiser controlar quem acessa.
+
+### 3. Como o emissor vai usar
+
+Depois de publicado:
+
+1. No projeto do emissor:
+   ```bash
+   dotnet add package Sieg.Auth
+   ```
+2. No código, seguir o exemplo do `README`:
+   - configurar `SiegOAuthOptions` com `ClientId`, `SecretKey`, `RedirectUri`;
+   - instanciar `SiegIntegrationClient`;
+   - implementar:
+     - rota de “Conectar com SIEG” → `GetAuthorizationUrl`;
+     - callback `/oauth/callback` → `CompleteAuthorizationAsync`;
+     - uso diário → `GetValidAccessTokenAsync`;
+     - encerramento → `RevokeAsync`.
+
+### 4. Repositório e docs
+
+Para facilitar ainda mais para os emissores:
+
+- Criar um repositório público (GitHub/GitLab) só com:
+  - código do SDK;
+  - `README` com exemplos;
+  - um projeto `samples` (console ou ASP.NET Core) demonstrando o fluxo completo.
+
+Se quiser, no próximo passo eu posso:
+
+- ajustar o `.csproj` com os metadados de NuGet,  
+- e montar um projetinho `samples` simulando um emissor real.
+
+user:
+<user_query>
+Vou subir no github acho que seja mais vantajoso , pode criar isso que falou do projeto e ajustar o .csproj
+</user_query>
+
+assistant:
+[Thinking] **Considering ASP.NET Core sample development**
+
+The user mentioned following steps for testing like a sender, which suggests creating a minimal ASP.NET Core API to host and test with real SIEG. That could be valuable, but building a complete sample means more code. Currently, the workspace only has a library without a solution file. While they may need a solution for local development, they haven’t asked yet. I’ll create a simple ASP.NET Core sample with well-defined endpoints for their needs.
+**Planning for minimal hosting setup**
+
+I’ll need to create a Program.cs file for minimal hosting and reference the Sieg.Auth project via ProjectReference. I’m considering initiating a new project using `dotnet new webapi` or `minimalapi`. However, it seems I can't run `dotnet new` through Shell in the workspace right now because of path issues. It tries to cd to an encoded workspace path that fails. So, I can generate the csproj manually using ApplyPatch instead, ensuring it’s valid for the user to run `dotnet build` later.
+**Preparing project details**
+
+I plan to update the Sieg.Auth.csproj properties with relevant details like PackageId, Version, Authors, Company, and Description along with a placeholder for RepositoryUrl. Adding `GeneratePackageOnBuild` could be optional but beneficial. For the sample project, I’ll reference the appropriate paths and ensure the necessary files, like Program.cs, are in place. I’ll also consider updating the README with a note about the sample project, even if the user didn’t ask for it explicitly. Let's move forward with these steps!
+Vou ajustar o `Sieg.Auth.csproj` com metadados de NuGet e criar um projeto de exemplo web (`samples`) que se comporta como um emissor (rotas de conectar, callback e teste de token).
+[Tool call] Read
+  path: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Sieg.Auth.csproj
+
+[Tool result] Read
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Update File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\src\Sieg.Auth\Sieg.Auth.csproj
+@@
+-<Project Sdk="Microsoft.NET.Sdk">
+-
+-  <PropertyGroup>
+-    <TargetFramework>net8.0</TargetFramework>
+-    <ImplicitUsings>enable</ImplicitUsings>
+-    <Nullable>enable</Nullable>
+-  </PropertyGroup>
+-
+-</Project>
+-
++<Project Sdk="Microsoft.NET.Sdk">
++
++  <PropertyGroup>
++    <TargetFramework>net8.0</TargetFramework>
++    <ImplicitUsings>enable</ImplicitUsings>
++    <Nullable>enable</Nullable>
++
++    <!-- Metadados de pacote NuGet -->
++    <PackageId>Sieg.Auth</PackageId>
++    <Version>1.0.0</Version>
++    <Authors>SeuNomeOuEmpresa</Authors>
++    <Company>SeuNomeOuEmpresa</Company>
++    <Description>SDK de autenticação OAuth 2.0 com a SIEG para sistemas emissores.</Description>
++    <PackageTags>SIEG;OAuth2;Fiscal;SDK</PackageTags>
++    <RepositoryUrl>https://github.com/seu-usuario/sieg-auth</RepositoryUrl>
++    <RepositoryType>git</RepositoryType>
++    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
++  </PropertyGroup>
++
++</Project>
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\samples\Sieg.Auth.Samples.Web\Sieg.Auth.Samples.Web.csproj
++<Project Sdk="Microsoft.NET.Sdk.Web">
++
++  <PropertyGroup>
++    <TargetFramework>net8.0</TargetFramework>
++    <Nullable>enable</Nullable>
++    <ImplicitUsings>enable</ImplicitUsings>
++  </PropertyGroup>
++
++  <ItemGroup>
++    <ProjectReference Include="..\..\src\Sieg.Auth\Sieg.Auth.csproj" />
++  </ItemGroup>
++
++</Project>
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ApplyPatch*** Begin Patch
+*** Add File: C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\samples\Sieg.Auth.Samples.Web\Program.cs
++using Sieg.Auth;
++
++var builder = WebApplication.CreateBuilder(args);
++
++// Configurações básicas do SDK SIEG (substitua pelos seus valores reais).
++builder.Services.AddSingleton(new SiegOAuthOptions
++{
++    ClientId = "SEU_CLIENT_ID",
++    SecretKey = "SEU_SECRET_KEY",
++    RedirectUri = new Uri("https://localhost:5001/oauth/callback"),
++    DefaultAccessLevel = "read"
++});
++
++builder.Services.AddSingleton<ISiegTokenStore, InMemorySiegTokenStore>();
++builder.Services.AddHttpClient<ISiegIntegrationClient, SiegIntegrationClient>();
++
++var app = builder.Build();
++
++// Endpoint para iniciar o fluxo de autorização com a SIEG.
++// GET /sieg/connect?empresaId=123
++app.MapGet("/sieg/connect", (string empresaId, ISiegIntegrationClient siegClient) =>
++{
++    // Em um app real, você poderia salvar state->empresaId em um store.
++    var state = Guid.NewGuid().ToString("N");
++
++    var url = siegClient.GetAuthorizationUrl(state, "read");
++    return Results.Redirect(url);
++});
++
++// Callback configurado na SIEG (RedirectUri).
++// GET /oauth/callback?accessToken=...&state=...
++app.MapGet("/oauth/callback", async (
++    string accessToken,
++    string state,
++    ISiegIntegrationClient siegClient) =>
++{
++    // Aqui usamos um accountKey fixo apenas para demonstração.
++    // Em um sistema real, recupere empresaId a partir do state.
++    var accountKey = "empresa-demo";
++
++    await siegClient.CompleteAuthorizationAsync(
++        accountKey,
++        accessToken,
++        state);
++
++    return Results.Ok(new
++    {
++        message = "Integração SIEG concluída com sucesso para a conta 'empresa-demo'.",
++        state,
++        accessToken
++    });
++});
++
++// Endpoint para testar obtenção de token válido (com auto-refresh).
++// GET /sieg/token?empresaId=empresa-demo
++app.MapGet("/sieg/token", async (string empresaId, ISiegIntegrationClient siegClient) =>
++{
++    var token = await siegClient.GetValidAccessTokenAsync(empresaId);
++    return Results.Ok(new
++    {
++        accessToken = token
++    });
++});
++
++// Endpoint para revogar o token da conta.
++// POST /sieg/revoke?empresaId=empresa-demo
++app.MapPost("/sieg/revoke", async (string empresaId, ISiegIntegrationClient siegClient) =>
++{
++    await siegClient.RevokeAsync(empresaId);
++    return Results.Ok(new
++    {
++        message = "Integração SIEG revogada para a conta " + empresaId
++    });
++});
++
++app.Run();
++
+*** End Patch
+
+[Tool result] ApplyPatch
+
+assistant:
+[Tool call] ReadLints
+  paths: ["C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\src\\Sieg.Auth","C:\\Users\\fgaim\\.cursor\\projects\\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0\\samples\\Sieg.Auth.Samples.Web"]
+
+[Tool result] ReadLints
+
+assistant:
+### O que eu configurei pra você
+
+- **Ajustei o `Sieg.Auth.csproj`** para já estar pronto para NuGet:
+  - `PackageId`, `Version`, `Authors`, `Company`, `Description`, `RepositoryUrl`, `GeneratePackageOnBuild=true`.
+  - Arquivo está em `src/Sieg.Auth/Sieg.Auth.csproj` (você só precisa trocar `SeuNomeOuEmpresa` e a URL do GitHub).
+
+- **Criei um projeto de exemplo web (emissor)**:
+  - Pasta: `samples/Sieg.Auth.Samples.Web`
+  - Arquivos:
+    - `Sieg.Auth.Samples.Web.csproj` (referencia `src/Sieg.Auth/Sieg.Auth.csproj`)
+    - `Program.cs` com:
+      - `GET /sieg/connect?empresaId=123` → gera URL da SIEG e redireciona.
+      - `GET /oauth/callback?accessToken=...&state=...` → chama `CompleteAuthorizationAsync` e salva token para `empresa-demo`.
+      - `GET /sieg/token?empresaId=empresa-demo` → chama `GetValidAccessTokenAsync` (com auto‑refresh).
+      - `POST /sieg/revoke?empresaId=empresa-demo` → chama `RevokeAsync`.
+
+### Próximos passos pra você
+
+1. Abrir `src/Sieg.Auth/Sieg.Auth.csproj` e ajustar:
+   - `Authors`, `Company`, `RepositoryUrl`.
+2. Abrir `samples/Sieg.Auth.Samples.Web/Program.cs` e colocar seus valores reais em:
+   - `ClientId`, `SecretKey`, `RedirectUri`.
+3. Rodar o exemplo como emissor:
+   - Na pasta raiz do workspace:  
+     `dotnet run --project samples/Sieg.Auth.Samples.Web`
+   - Apontar na SIEG o `RedirectUri` para `https://localhost:5001/oauth/callback`.
+   - Acessar `https://localhost:5001/sieg/connect?empresaId=empresa-demo` e seguir o fluxo de login/autorização.
+
+user:
+<user_query>
+me mostra como compartilhar no github aqui pelo cursor?
+</user_query>
+
+assistant:
+[Thinking] **Explaining GitHub sharing steps**
+
+The user wants to know how to share from Cursor on GitHub, so I’m considering concise, step-by-step instructions. They have their projects in .cursor/projects and likely want to push the original project. I’ll explain that they can initialize a Git repository in that workspace and push to a new GitHub repo. Steps will include creating the repo, grabbing the URL, running commands in the Cursor terminal, mentioning personal access tokens for 2FA, and suggesting using a clean folder if needed.
+### Passo a passo pra subir esse código no GitHub pelo Cursor
+
+Vou assumir que o workspace aberto no Cursor é essa pasta:  
+`C:\Users\fgaim\.cursor\projects\c-Users-fgaim-OneDrive-rea-de-Trabalho-Oauth-2-0`
+
+#### 1. Criar o repositório no GitHub
+
+1. Acesse o GitHub e clique em **New repository**.
+2. Escolha um nome, por exemplo: `sieg-auth`.
+3. Deixe como **Public** ou **Private**, como preferir.
+4. Pode deixar sem README/sem `.gitignore` (ou, se criar, não tem problema).
+5. Copie a URL HTTPS do repositório, algo como:  
+   `https://github.com/SEU-USUARIO/sieg-auth.git`
+
+#### 2. Inicializar o Git no projeto (no Cursor)
+
+1. No Cursor, abra um **Terminal** (Ctrl+`).
+2. Confirme que está na pasta raiz do projeto (a mesma onde tem `src`, `samples`, `README.md`).
+3. Rode estes comandos:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit: Sieg.Auth SDK"
+git branch -M main
+git remote add origin https://github.com/SEU-USUARIO/sieg-auth.git
+git push -u origin main
+```
+
+- Troque `https://github.com/SEU-USUARIO/sieg-auth.git` pela URL do seu repositório.
+- Na primeira vez, o GitHub pode pedir login / token de acesso (PAT) no prompt.
+
+#### 3. Conferir no GitHub
+
+- Depois do `git push`, abra o repositório no GitHub.
+- Você deve ver:
+  - `src/Sieg.Auth/...`
+  - `samples/Sieg.Auth.Samples.Web/...`
+  - `README.md`
+
+Se quiser, me manda o nome/URL que escolheu no GitHub que eu te ajudo a ajustar `RepositoryUrl` no `Sieg.Auth.csproj` para ficar certinho.
