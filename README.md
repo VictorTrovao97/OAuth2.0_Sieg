@@ -41,17 +41,20 @@ using Sieg.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton(new SiegOAuthOptions
+// Configuração otimizada com extensão nativa
+builder.Services.AddSiegAuth(options =>
 {
-    ClientId = "seu-client-id",
-    SecretKey = "sua-secret-key",
-    RedirectUri = new Uri("https://seu-sistema.com/oauth/callback"),
-    DefaultAccessLevel = "read"
+    options.ClientId = "seu-client-id";
+    options.SecretKey = "sua-secret-key";
+    options.RedirectUri = new Uri("https://seu-sistema.com/oauth/callback");
+    options.DefaultAccessLevel = "read";
+    
+    // Opcional: Ajustar prazo fixo de expiração
+    // options.PermanentTokenExpirationDays = 30; 
 });
 
-// PRODUÇÃO: implemente ISiegTokenStore com banco de dados / cache próprio.
-builder.Services.AddSingleton<ISiegTokenStore, InMemorySiegTokenStore>();
-builder.Services.AddHttpClient<ISiegIntegrationClient, SiegIntegrationClient>();
+// IMPORTANTE: Em Produção, registre um ISiegTokenStore que salve em Banco/Cache antes do AddSiegAuth
+// builder.Services.AddSingleton<ISiegTokenStore, DatabaseSiegTokenStore>();
 ```
 
 #### 2. Endpoint para iniciar conexão com a SIEG

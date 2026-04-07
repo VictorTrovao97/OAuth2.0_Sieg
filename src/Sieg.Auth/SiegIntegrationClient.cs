@@ -1,9 +1,11 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Sieg.Auth.Exceptions;
 
 namespace Sieg.Auth;
@@ -23,13 +25,13 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
     private readonly HttpClient _httpClient;
     private readonly SiegOAuthOptions _options;
     private readonly ISiegTokenStore _tokenStore;
-    private readonly ISiegAuthLogger? _logger;
+    private readonly ILogger<SiegIntegrationClient>? _logger;
 
     public SiegIntegrationClient(
         HttpClient httpClient,
         SiegOAuthOptions options,
         ISiegTokenStore tokenStore,
-        ISiegAuthLogger? logger = null)
+        ILogger<SiegIntegrationClient>? logger = null)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -123,10 +125,10 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
                 $"StatusCode={apiResponse.StatusCode}, Error='{apiResponse.ErrorMessage}'.");
         }
 
-        // Token definitivo com validade de 30 dias a partir de agora.
+        // Token definitivo com validade configurada (geralmente 30 dias, mas a API nao expoe).
         var token = new SiegToken(
             apiResponse.Data.AccessToken,
-            DateTimeOffset.UtcNow.AddDays(30));
+            DateTimeOffset.UtcNow.AddDays(_options.PermanentTokenExpirationDays));
 
         await _tokenStore.SaveTokenAsync(accountKey, token, ct).ConfigureAwait(false);
 
@@ -163,7 +165,7 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
             // A SIEG mantém o mesmo valor de token e apenas renova a validade no backend.
             var renewed = new SiegToken(
                 token.AccessToken,
-                DateTimeOffset.UtcNow.AddDays(30));
+                DateTimeOffset.UtcNow.AddDays(_options.PermanentTokenExpirationDays));
 
             await _tokenStore.SaveTokenAsync(accountKey, renewed, ct).ConfigureAwait(false);
 
@@ -226,28 +228,24 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, uri)
         {
-            Content = new StringContent(
-                JsonSerializer.Serialize(payload, JsonOptions),
-                Encoding.UTF8,
-                "application/json")
+            Content = JsonContent.Create(payload, mediaType: null, options: JsonOptions)
         };
 
         // Headers exigidos pela SIEG.
         request.Headers.Add("X-Client-Id", _options.ClientId);
         request.Headers.Add("X-Secret-Key", _options.SecretKey);
 
-        _logger?.LogDebug($"Enviando requisição POST para '{uri}'.");
+        _logger?.LogDebug("Enviando requisição POST para '{Uri}'.", uri);
 
         using var response = await _httpClient.SendAsync(request, ct).ConfigureAwait(false);
 
-        var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
-
         if (!response.IsSuccessStatusCode)
         {
+            var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+
             _logger?.LogError(
-                $"Chamada HTTP para '{uri}' falhou com código {(int)response.StatusCode} ({response.StatusCode}). " +
-                $"Corpo: {content}",
-                null);
+                "Chamada HTTP para '{Uri}' falhou com código {StatusCode} ({StatusCodeName}). Corpo: {Content}",
+                uri, (int)response.StatusCode, response.StatusCode, content);
 
             throw new SiegHttpException(
                 response.StatusCode,
@@ -257,21 +255,20 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
 
         try
         {
-            var result = JsonSerializer.Deserialize<TResponse>(content, JsonOptions);
+            var result = await response.Content.ReadFromJsonAsync<TResponse>(JsonOptions, ct).ConfigureAwait(false);
             if (result == null)
             {
                 throw new SiegAuthException(
                     $"Não foi possível desserializar a resposta de '{uri}' para o tipo '{typeof(TResponse).Name}'.");
             }
 
-            _logger?.LogDebug(
-                $"Resposta HTTP de '{uri}' desserializada com sucesso para '{typeof(TResponse).Name}'.");
+            _logger?.LogDebug("Resposta HTTP de '{Uri}' desserializada com sucesso para '{TypeName}'.", uri, typeof(TResponse).Name);
 
             return result;
         }
         catch (JsonException ex)
         {
-            _logger?.LogError($"Erro ao desserializar a resposta JSON de '{uri}'.", ex);
+            _logger?.LogError(ex, "Erro ao desserializar a resposta JSON de '{Uri}'.", uri);
 
             throw new SiegAuthException(
                 $"Erro ao desserializar a resposta JSON de '{uri}'.",

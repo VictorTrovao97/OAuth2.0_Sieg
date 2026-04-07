@@ -50,5 +50,11 @@ public sealed class SiegOAuthOptions
     /// Quando estiver a menos que esse tempo de expirar, o SDK tentará um refresh.
     /// </summary>
     public TimeSpan AutoRefreshThreshold { get; set; } = TimeSpan.FromDays(1);
+
+    /// <summary>
+    /// Dias estáticos de expiração de um token permanente retornado pela SIEG.
+    /// A API não retorna esse prazo, logo é preciso emular internamente.
+    /// </summary>
+    public int PermanentTokenExpirationDays { get; set; } = 30;
 }
 
