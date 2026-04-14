@@ -1,7 +1,7 @@
 ## Sieg.Auth SDK (OAuth 2.0 SIEG)
 
 Biblioteca .NET para encapsular o fluxo de autenticação OAuth 2.0 da SIEG,
-pensada para sistemas emissores de nota fiscal, com auto-refresh de token.
+pensada para sistemas emissores de nota fiscal, com auto-refresh de token. Suporta nativamente **.NET 8**, **.NET Standard 2.0** e **.NET Framework 4.6.2+**.
 
 ### Instalação
 

@@ -71,6 +71,10 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
         var query = new StringBuilder();
 
         AppendQueryParam(query, "clientId", _options.ClientId);
+        if (_options.RedirectUri is not null)
+        {
+            AppendQueryParam(query, "redirectUri", _options.RedirectUri.ToString());
+        }
         AppendQueryParam(query, "state", state);
         AppendQueryParam(query, "accessLevel", level);
 
@@ -241,7 +245,11 @@ public sealed class SiegIntegrationClient : ISiegIntegrationClient
 
         if (!response.IsSuccessStatusCode)
         {
+#if NET8_0_OR_GREATER
             var content = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+#else
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
 
             _logger?.LogError(
                 "Chamada HTTP para '{Uri}' falhou com código {StatusCode} ({StatusCodeName}). Corpo: {Content}",
